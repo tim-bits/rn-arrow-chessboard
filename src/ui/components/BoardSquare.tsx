@@ -7,7 +7,12 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { POP_DOWN_MS, POP_LIFT, POP_SCALE, POP_UP_MS } from '../../constants/motion';
+import {
+  POP_DOWN_MS,
+  POP_LIFT,
+  POP_SCALE,
+  POP_UP_MS,
+} from '../../constants/motion';
 
 interface BoardSquareProps {
   squareNotation: string;
@@ -25,7 +30,7 @@ interface BoardSquareProps {
 
 const BoardSquareComponent: React.FC<BoardSquareProps> = ({
   squareNotation,
-  pieceKey,
+  pieceKey: _pieceKey,
   pieceImage,
   isLight,
   isSelected,
@@ -42,10 +47,7 @@ const BoardSquareComponent: React.FC<BoardSquareProps> = ({
 
   React.useEffect(() => {
     const shouldPop =
-      Boolean(pieceImage) &&
-      isSelected &&
-      !disablePop &&
-      !isGameOver;
+      Boolean(pieceImage) && isSelected && !disablePop && !isGameOver;
     // if (__DEV__) {
     //   console.log('[PopDebug]', squareNotation, {
     //     shouldPop,
@@ -60,10 +62,25 @@ const BoardSquareComponent: React.FC<BoardSquareProps> = ({
       return;
     }
     pop.value = withSequence(
-      withTiming(1, { duration: POP_UP_MS + 30, easing: Easing.out(Easing.quad) }),
-      withTiming(0, { duration: POP_DOWN_MS + 30, easing: Easing.in(Easing.quad) })
+      withTiming(1, {
+        duration: POP_UP_MS + 30,
+        easing: Easing.out(Easing.quad),
+      }),
+      withTiming(0, {
+        duration: POP_DOWN_MS + 30,
+        easing: Easing.in(Easing.quad),
+      })
     );
-  }, [isSelected, isDragged, disablePop, pieceImage, isGameOver, kingSquare, squareNotation, pop]);
+  }, [
+    isSelected,
+    isDragged,
+    disablePop,
+    pieceImage,
+    isGameOver,
+    kingSquare,
+    squareNotation,
+    pop,
+  ]);
 
   const pieceAnimatedStyle = useAnimatedStyle(() => {
     const lift = (POP_LIFT - 1) * pop.value;
@@ -76,6 +93,7 @@ const BoardSquareComponent: React.FC<BoardSquareProps> = ({
 
   return (
     <View style={[styles.square, { backgroundColor: bg }]}>
+      {/* eslint-disable react-native/no-inline-styles */}
       {pieceImage ? (
         <Animated.Image
           source={pieceImage}
@@ -88,6 +106,7 @@ const BoardSquareComponent: React.FC<BoardSquareProps> = ({
           fadeDuration={0}
         />
       ) : null}
+      {/* eslint-enable react-native/no-inline-styles */}
       {isLegal && !isSelected && <View style={styles.legalMoveDot} />}
       {isSelected && <View style={styles.selectedBorder} />}
       {isKingInCheck && <View style={styles.checkBorder} />}

@@ -8,21 +8,35 @@ type Props = {
   onCancel: () => void;
 };
 
-const PromotionDialog: React.FC<Props> = ({ visible, color, onSelect, onCancel }) => {
-  const pieces: Array<'q' | 'r' | 'b' | 'n'> = ['q','r','b','n'];
+const PromotionDialog: React.FC<Props> = ({
+  visible,
+  color,
+  onSelect,
+  onCancel,
+}) => {
+  const pieces: Array<'q' | 'r' | 'b' | 'n'> = ['q', 'r', 'b', 'n'];
 
-  const imageFor = (color: 'w' | 'b', piece: string) => {
+  const imageFor = (_color: 'w' | 'b', piece: string) => {
     const key = `${color}${piece.toUpperCase()}`;
     switch (key) {
-      case 'wQ': return require('../assets/chesspieces/wQ.png');
-      case 'wR': return require('../assets/chesspieces/wR.png');
-      case 'wB': return require('../assets/chesspieces/wB.png');
-      case 'wN': return require('../assets/chesspieces/wN.png');
-      case 'bQ': return require('../assets/chesspieces/bQ.png');
-      case 'bR': return require('../assets/chesspieces/bR.png');
-      case 'bB': return require('../assets/chesspieces/bB.png');
-      case 'bN': return require('../assets/chesspieces/bN.png');
-      default: return require('../assets/chesspieces/wQ.png');
+      case 'wQ':
+        return require('../assets/chesspieces/wQ.png');
+      case 'wR':
+        return require('../assets/chesspieces/wR.png');
+      case 'wB':
+        return require('../assets/chesspieces/wB.png');
+      case 'wN':
+        return require('../assets/chesspieces/wN.png');
+      case 'bQ':
+        return require('../assets/chesspieces/bQ.png');
+      case 'bR':
+        return require('../assets/chesspieces/bR.png');
+      case 'bB':
+        return require('../assets/chesspieces/bB.png');
+      case 'bN':
+        return require('../assets/chesspieces/bN.png');
+      default:
+        return require('../assets/chesspieces/wQ.png');
     }
   };
 
@@ -40,9 +54,9 @@ const PromotionDialog: React.FC<Props> = ({ visible, color, onSelect, onCancel }
                 key={p}
                 style={[
                   styles.pieceButton,
-                  {
-                    backgroundColor: color === 'w' ? '#f0d9b5' : '#b58863',
-                  }
+                  color === 'w'
+                    ? styles.pieceButtonLight
+                    : styles.pieceButtonDark,
                 ]}
                 onStartShouldSetResponder={() => true}
                 onResponderRelease={() => onSelect(p)}
@@ -87,6 +101,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     marginBottom: 0,
+  },
+  pieceButtonLight: {
+    backgroundColor: '#f0d9b5',
+  },
+  pieceButtonDark: {
+    backgroundColor: '#b58863',
   },
   pieceButton: {
     flex: 1,

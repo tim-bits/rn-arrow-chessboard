@@ -34,6 +34,7 @@ A top-level provider that initializes store configuration **before any child com
 ```
 
 **Why this works:**
+
 - `useLayoutEffect` with empty dependency array runs synchronously during provider mount
 - All descendant hooks see the correct value from the start
 - No race conditions
@@ -50,6 +51,7 @@ const animation = useChessboardAnimation(moveAnimationDuration);
 ```
 
 **Why this works:**
+
 - Bypasses store timing issues entirely
 - Direct prop flow to animation logic
 - Can be used alongside ChessProvider for maximum clarity
@@ -59,7 +61,7 @@ const animation = useChessboardAnimation(moveAnimationDuration);
 ✅ Deterministic animation duration behavior  
 ✅ Prop value now correctly overrides store default  
 ✅ No more "wrong duration" logs mid-animation  
-✅ Eliminates race conditions on initial render  
+✅ Eliminates race conditions on initial render
 
 ## Usage Examples
 
@@ -81,7 +83,7 @@ function App() {
 function MyComponent() {
   const MOVE_DURATION = 3000;
   const { move } = useChessboardAnimation(MOVE_DURATION);
-  
+
   return (
     <ChessSurfaceInteractive
       moveAnimationDuration={MOVE_DURATION}
@@ -96,7 +98,7 @@ function MyComponent() {
 ```tsx
 function App() {
   const MOVE_DURATION = 3000;
-  
+
   return (
     <ChessProvider moveAnimationDuration={MOVE_DURATION}>
       <ChessSurfaceInteractive moveAnimationDuration={MOVE_DURATION} />
@@ -110,12 +112,13 @@ function App() {
 **If you were already passing `moveAnimationDuration` to ChessSurfaceInteractive:**
 
 1. Wrap your component tree with `ChessProvider`:
+
 ```tsx
 import { ChessProvider } from 'rn-chessboard-lib';
 
 <ChessProvider moveAnimationDuration={yourDuration}>
   <ChessSurfaceInteractive />
-</ChessProvider>
+</ChessProvider>;
 ```
 
 2. The `moveAnimationDuration` prop to ChessSurfaceInteractive is still respected but now works reliably
@@ -123,6 +126,7 @@ import { ChessProvider } from 'rn-chessboard-lib';
 **If you use `useChessboardAnimation` directly:**
 
 1. Optionally pass duration to the hook:
+
 ```tsx
 const { move } = useChessboardAnimation(3000);
 ```
@@ -141,14 +145,14 @@ const { move } = useChessboardAnimation(3000);
 ❌ useLayoutEffect vs useEffect (already optimal - both too late)  
 ❌ Changing dependency arrays (doesn't address initialization order)  
 ❌ Zustand selector optimization (not the bottleneck)  
-❌ Reset logic (doesn't prevent initial capture)  
+❌ Reset logic (doesn't prevent initial capture)
 
 ### Why This Works
 
 ✅ ChessProvider runs during provider mount (before children)  
 ✅ Empty dependency array ensures one-time initialization  
 ✅ Direct override option bypasses store timing entirely  
-✅ Architecture now matches initialization flow  
+✅ Architecture now matches initialization flow
 
 ## Files Changed
 

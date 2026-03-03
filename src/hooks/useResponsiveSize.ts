@@ -10,10 +10,10 @@ interface ResponsiveSizeConfig {
  * Hook to get responsive font sizes based on screen dimensions
  * @param config Object with small, large font sizes and optional breakpoint
  * @returns Font size in pixels
- * 
+ *
  * Default breakpoint: 768px
  * Platform detection: web gets larger text than mobile
- * 
+ *
  * @example
  * const fontSize = useResponsiveSize({ small: 12, large: 24 });
  */

@@ -6,7 +6,11 @@ import {
 } from 'react-native-gesture-handler';
 import type { FenString, Square } from '../types/shared';
 import { indicesToSquare, squareToPixel } from '../utils/boardGeometry';
-import { useChessStore, chessSelectors, type ChessState } from '../store/chessStore';
+import {
+  useChessStore,
+  chessSelectors,
+  type ChessState,
+} from '../store/chessStore';
 import { useResponsiveCoordinateSize } from '../hooks/useResponsiveSize';
 import { RankLabels, FileLabels } from './components/CoordinateLabels';
 import { DraggedPiece } from './components/DraggedPiece';
@@ -72,10 +76,7 @@ export default function Chessboard({
   // Sync arrowColor prop to store
   React.useEffect(() => {
     if (arrowColor !== undefined) {
-      log(
-        '[Chessboard] Setting arrowColor to store:',
-        arrowColor
-      );
+      log('[Chessboard] Setting arrowColor to store:', arrowColor);
       setArrowColor(arrowColor);
     }
   }, [arrowColor, setArrowColor]);
@@ -106,7 +107,6 @@ export default function Chessboard({
 
   const {
     board,
-    animatingMove,
     selectedSquare,
     legalMovesSet,
     arrows,
@@ -123,7 +123,6 @@ export default function Chessboard({
     animatedMove,
     movePieceStyle,
     combinedGesture,
-    handleUserInteraction,
     performMove,
   } = useChessOrchestration({
     effectiveBoardSize,
@@ -135,28 +134,32 @@ export default function Chessboard({
   });
 
   // Calculate square size for drag animation
-const squareSize = effectiveBoardSize / 8;
+  const squareSize = effectiveBoardSize / 8;
 
-// Memoize board rows to limit rerenders of 64 squares when props are stable
-const memoizedRows = React.useMemo(() => {
-  return board.map((rank: any, rIdx: number) => {
-    return rank.map((sq: any, fIdx: number) => {
-      const squareNotation = getSquareNotation(rIdx, fIdx, effectiveOrientation);
-      const isLight = (rIdx + fIdx) % 2 === 0;
-      const pieceKey = sq ? `${sq.color}${sq.type}_${squareNotation}` : null;
-      const pieceImage = sq
-        ? PIECE_IMAGES[`${sq.color}${sq.type.toUpperCase()}`]
-        : null;
-      return {
-        key: `s-${rIdx}-${fIdx}`,
-        squareNotation,
-        isLight,
-        pieceKey,
-        pieceImage,
-      };
+  // Memoize board rows to limit rerenders of 64 squares when props are stable
+  const memoizedRows = React.useMemo(() => {
+    return board.map((rank: any, rIdx: number) => {
+      return rank.map((sq: any, fIdx: number) => {
+        const squareNotation = getSquareNotation(
+          rIdx,
+          fIdx,
+          effectiveOrientation
+        );
+        const isLight = (rIdx + fIdx) % 2 === 0;
+        const pieceKey = sq ? `${sq.color}${sq.type}_${squareNotation}` : null;
+        const pieceImage = sq
+          ? PIECE_IMAGES[`${sq.color}${sq.type.toUpperCase()}`]
+          : null;
+        return {
+          key: `s-${rIdx}-${fIdx}`,
+          squareNotation,
+          isLight,
+          pieceKey,
+          pieceImage,
+        };
+      });
     });
-  });
-}, [board, effectiveOrientation]);
+  }, [board, effectiveOrientation]);
 
   const capturedOverlay = animatedMove?.captured;
   const capturedOverlayPos = React.useMemo(() => {
@@ -215,10 +218,12 @@ const memoizedRows = React.useMemo(() => {
               ]}
             >
               <BoardView
-                style={{
-                  width: effectiveBoardSize,
-                  height: effectiveBoardSize,
-                } as any}
+                style={
+                  {
+                    width: effectiveBoardSize,
+                    height: effectiveBoardSize,
+                  } as any
+                }
                 rows={memoizedRows}
                 selectedSquare={selectedSquare}
                 legalMovesSet={legalMovesSet}
@@ -287,4 +292,3 @@ const styles = StyleSheet.create({
   contentArea: { flexDirection: 'row', alignItems: 'flex-end' },
   boardContainer: { position: 'relative' },
 });
-

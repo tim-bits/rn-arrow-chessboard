@@ -1,4 +1,4 @@
-import type { Square } from "../types/shared.js";
+import type { Square } from '../types/shared.js';
 
 /**
  * Convert board coordinates (rank, file indices) to Square notation
@@ -10,7 +10,7 @@ import type { Square } from "../types/shared.js";
 export function indicesToSquare(
   rankIdx: number,
   fileIdx: number,
-  orientation: "white" | "black" = "white"
+  orientation: 'white' | 'black' = 'white'
 ): Square {
   // Normalize indices to 0-7 range
   const normalizedRank = Math.max(0, Math.min(7, Math.floor(rankIdx)));
@@ -19,7 +19,7 @@ export function indicesToSquare(
   let rank: number;
   let file: number;
 
-  if (orientation === "white") {
+  if (orientation === 'white') {
     // White orientation: rank 0 = rank 8, file 0 = file a
     rank = 8 - normalizedRank;
     file = normalizedFile;
@@ -41,7 +41,7 @@ export function indicesToSquare(
  */
 export function squareToIndices(
   square: Square,
-  orientation: "white" | "black" = "white"
+  orientation: 'white' | 'black' = 'white'
 ): [number, number] {
   const fileChar = square.charAt(0);
   const rankStr = square.charAt(1);
@@ -51,7 +51,7 @@ export function squareToIndices(
   let rankIdx: number;
   let fileIdx: number;
 
-  if (orientation === "white") {
+  if (orientation === 'white') {
     rankIdx = 8 - rank;
     fileIdx = file;
   } else {
@@ -76,7 +76,7 @@ export function pixelToSquare(
   y: number,
   boardWidth: number,
   boardHeight: number,
-  orientation: "white" | "black" = "white"
+  orientation: 'white' | 'black' = 'white'
 ): Square | null {
   const squareWidth = boardWidth / 8;
   const squareHeight = boardHeight / 8;
@@ -105,10 +105,10 @@ export function squareToPixel(
   square: Square,
   boardWidth: number,
   boardHeight: number,
-  orientation: "white" | "black" = "white"
+  orientation: 'white' | 'black' = 'white'
 ): [number, number] {
   const [rankIdx, fileIdx] = squareToIndices(square, orientation);
-  
+
   const squareWidth = boardWidth / 8;
   const squareHeight = boardHeight / 8;
 
@@ -118,5 +118,3 @@ export function squareToPixel(
 
   return [x, y];
 }
-
-

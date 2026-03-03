@@ -1,6 +1,9 @@
 import React from 'react';
 import { Image, View, StyleSheet } from 'react-native';
-import Animated, { AnimatedStyleProp, ViewStyle } from 'react-native-reanimated';
+import Animated, {
+  AnimatedStyleProp,
+  ViewStyle,
+} from 'react-native-reanimated';
 import type { ImageSourcePropType } from 'react-native';
 
 type MoveOverlayProps = {
@@ -21,9 +24,10 @@ export const MoveOverlay: React.FC<MoveOverlayProps> = ({
   capturedOverlayPos,
   movePieceStyle,
 }) => {
-  const capturedOverlay = animatedMove?.captured && capturedOverlayPos
-    ? { ...animatedMove.captured, pos: capturedOverlayPos }
-    : null;
+  const capturedOverlay =
+    animatedMove?.captured && capturedOverlayPos
+      ? { ...animatedMove.captured, pos: capturedOverlayPos }
+      : null;
 
   return (
     <>

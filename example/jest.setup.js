@@ -1,3 +1,4 @@
+/* eslint-env jest */
 // Lightweight virtual mock for react-native-reanimated (no native deps needed)
 jest.mock(
   'react-native-reanimated',

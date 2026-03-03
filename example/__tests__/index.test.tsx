@@ -49,7 +49,10 @@ describe('Chess store basics', () => {
     act(() => useChessStore.getState().makeMove('e2', 'e4'));
     useChessStore.getState().completeAnimation();
     expect(useChessStore.getState().currentPositionIndex).toBe(1);
-    expect(useChessStore.getState().currentPositionIndex < useChessStore.getState().positions.length - 1).toBe(false);
+    expect(
+      useChessStore.getState().currentPositionIndex <
+        useChessStore.getState().positions.length - 1
+    ).toBe(false);
     act(() => useChessStore.getState().undo());
     expect(useChessStore.getState().currentPositionIndex).toBe(0);
     act(() => useChessStore.getState().redo());
@@ -57,7 +60,13 @@ describe('Chess store basics', () => {
   });
 
   test('checkmate detection (Fool’s mate)', () => {
-    act(() => useChessStore.getState().setPosition('rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq g3 0 2'));
+    act(() =>
+      useChessStore
+        .getState()
+        .setPosition(
+          'rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq g3 0 2'
+        )
+    );
     act(() => useChessStore.getState().makeMove('d8', 'h4'));
     useChessStore.getState().completeAnimation();
     expect(useChessStore.getState().isCheckmate).toBe(true);
@@ -88,7 +97,9 @@ describe('Chess store basics', () => {
 
   test('promotion applies when provided', () => {
     // White pawn on a7 ready to promote
-    act(() => useChessStore.getState().setPosition('8/P7/8/8/8/8/8/K6k w - - 0 1'));
+    act(() =>
+      useChessStore.getState().setPosition('8/P7/8/8/8/8/8/K6k w - - 0 1')
+    );
     act(() => useChessStore.getState().makeMove('a7', 'a8', 'q'));
     useChessStore.getState().completeAnimation();
     expect(useChessStore.getState().fen.toLowerCase()).toContain('q');
@@ -127,7 +138,9 @@ describe('Chess store basics', () => {
       },
     });
 
-    const result = useChessStore.getState().requestMove('d2', 'd4', undefined, { allowQueue: true });
+    const result = useChessStore
+      .getState()
+      .requestMove('d2', 'd4', undefined, { allowQueue: true });
     expect(result).toBe('queued');
     expect(useChessStore.getState().queuedMoves.length).toBe(1);
     // Complete animation then process queue
@@ -167,9 +180,11 @@ describe('Chess store basics', () => {
         kingSquare: state.kingSquare,
       },
     });
-    const result = useChessStore
-      .getState()
-      .requestMove('d2', 'd4', undefined, { allowQueue: true, flushIfAnimating: true, clearQueue: true });
+    const result = useChessStore.getState().requestMove('d2', 'd4', undefined, {
+      allowQueue: true,
+      flushIfAnimating: true,
+      clearQueue: true,
+    });
     expect(result).toBe('started');
   });
 

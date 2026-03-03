@@ -88,7 +88,9 @@ export const useChessGestures = ({
 
       if (to && from && to !== from) {
         log(
-          `[Timing] manual drag move start ${from}->${to} t=${Date.now()} token=${useChessStore.getState().moveToken}`
+          `[Timing] manual drag move start ${from}->${to} t=${Date.now()} token=${
+            useChessStore.getState().moveToken
+          }`
         );
         recordManualMoveStart({
           from,
@@ -129,7 +131,9 @@ export const useChessGestures = ({
       const legalMoves = state.legalMoves;
       if (from && legalMoves.includes(sq)) {
         log(
-          `[Timing] manual tap move start ${from}->${sq} t=${Date.now()} token=${useChessStore.getState().moveToken}`
+          `[Timing] manual tap move start ${from}->${sq} t=${Date.now()} token=${
+            useChessStore.getState().moveToken
+          }`
         );
         recordManualMoveStart({
           from,

@@ -14,15 +14,16 @@ jest.mock('../../src/ui/components/BoardSquare', () => {
 });
 // Import the mock after it's defined
 // eslint-disable-next-line import/first
-const { BoardSquare: BoardSquareMock } = require('../../src/ui/components/BoardSquare') as {
-  BoardSquare: jest.Mock;
-};
+const { BoardSquare: BoardSquareMock } =
+  require('../../src/ui/components/BoardSquare') as {
+    BoardSquare: jest.Mock;
+  };
 
 const fakeImg = { uri: 'piece.png' };
 
 describe('BoardView', () => {
-  const rows = Array.from({ length: 8 }, (_, r) =>
-    Array.from({ length: 8 }, (_, f) => ({
+  const rows = Array.from({ length: 8 }, (_ignored, r) =>
+    Array.from({ length: 8 }, (_ignored2, f) => ({
       key: `${r}-${f}`,
       squareNotation: `${String.fromCharCode(97 + f)}${8 - r}`,
       isLight: (r + f) % 2 === 0,

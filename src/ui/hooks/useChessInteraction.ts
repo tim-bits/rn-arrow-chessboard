@@ -52,7 +52,9 @@ export const useChessInteraction = ({
         clearQueue: true,
       });
       log(
-        `[Timing] requestMove result ${from}->${to} result=${result} t=${Date.now()} token=${useChessStore.getState().moveToken}`
+        `[Timing] requestMove result ${from}->${to} result=${result} t=${Date.now()} token=${
+          useChessStore.getState().moveToken
+        }`
       );
       if (result === 'started') {
         setAnimationState('animating');

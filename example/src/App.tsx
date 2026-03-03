@@ -9,12 +9,16 @@ import {
   Platform,
   useWindowDimensions,
   Switch,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import React, { useRef, useState } from 'react';
 import Chessboard from '../../src/ui/Chessboard';
 import { ChessProvider } from '../../src/ui/ChessProvider';
-import { useChessStore, chessSelectors, type ChessState } from '../../src/store/chessStore';
+import {
+  useChessStore,
+  chessSelectors,
+  type ChessState,
+} from '../../src/store/chessStore';
 import { useChessboardAnimation } from '../../src/hooks/useChessboardAnimation';
 import { createLichessCloudAdapter } from '../../src/adapters';
 import { log } from '../../src/utils/log';
@@ -24,10 +28,6 @@ const DEFAULT_MOVE_ANIMATION_DURATION = 1500;
 const DEFAULT_ARROW_DISPLAY_DURATION = 500;
 const LICHESS_API_LABEL = 'lichess.org/api/cloud-eval';
 type LichessStatus = 'idle' | 'ok' | 'rate_limited' | 'error';
-
-
-
-
 
 function ChessDemoEffects({
   mode,
@@ -88,11 +88,13 @@ function ChessDemoEffects({
             await new Promise((resolve) =>
               setTimeout(resolve, moveAnimationDuration)
             );
-            useChessStore.getState().makeMove(
-              moves[0]!.from as any,
-              moves[0]!.to as any,
-              moves[0]!.promotion as any
-            );
+            useChessStore
+              .getState()
+              .makeMove(
+                moves[0]!.from as any,
+                moves[0]!.to as any,
+                moves[0]!.promotion as any
+              );
           } finally {
             inFlight = false;
           }
@@ -236,7 +238,11 @@ function ChessDemoEffects({
           log(`[Demo] Setting arrows for ${step.move[1]}`);
           await arrows(step.arrows as ArrowPair[]);
           log(`[Demo] Executing move ${step.move[1]}`);
-          await move(step.move[0] as Square, step.move[1] as Square, step.move[2] as string | undefined);
+          await move(
+            step.move[0] as Square,
+            step.move[1] as Square,
+            step.move[2] as string | undefined
+          );
           log(`[Demo] Move ${step.move[1]} complete`);
         }
 
@@ -260,6 +266,7 @@ function ChessDemoEffects({
     isDemoRunning,
     demoHasRun,
     setDemoHasRun,
+    setIsDemoRunning,
   ]);
 
   return null;
@@ -272,10 +279,8 @@ export default function App() {
   const [inputValue, setInputValue] = useState(
     String(DEFAULT_MOVE_ANIMATION_DURATION)
   );
-  const [arrowDisplayDuration, setArrowDisplayDuration] = useState(
-    DEFAULT_ARROW_DISPLAY_DURATION
-  );
-  const [arrowDurationInput, setArrowDurationInput] = useState(
+  const [arrowDisplayDuration] = useState(DEFAULT_ARROW_DISPLAY_DURATION);
+  const [_arrowDurationInput, _setArrowDurationInput] = useState(
     String(DEFAULT_ARROW_DISPLAY_DURATION)
   );
   const [arrowColor, setArrowColor] = useState('#FFD700');
@@ -332,14 +337,6 @@ export default function App() {
     setArrowColorInput(text);
     if (text.match(/^#[0-9A-F]{6}$/i)) {
       setArrowColor(text);
-    }
-  };
-
-  const handleArrowDurationChange = (text: string) => {
-    setArrowDurationInput(text);
-    const duration = parseInt(text, 10);
-    if (!isNaN(duration) && duration >= 0) {
-      setArrowDisplayDuration(duration);
     }
   };
 
@@ -425,7 +422,11 @@ export default function App() {
               Arrow Color:
             </Text>
             <TextInput
-              style={[styles.input, responsiveStyles.input, styles.controlInput]}
+              style={[
+                styles.input,
+                responsiveStyles.input,
+                styles.controlInput,
+              ]}
               value={arrowColorInput}
               onChangeText={handleArrowColorChange}
               placeholder="#FFD700"
@@ -479,7 +480,9 @@ export default function App() {
                 ]}
                 onPress={handleRerunDemo}
               >
-                <Text style={[styles.smallButtonText, responsiveStyles.buttonText]}>
+                <Text
+                  style={[styles.smallButtonText, responsiveStyles.buttonText]}
+                >
                   Rerun Demo
                 </Text>
               </Pressable>
@@ -487,40 +490,121 @@ export default function App() {
           </View>
 
           {(mode === 'demo' || mode === 'manual') && (
-          <View style={styles.buttonContainer}>
-              <Text style={[styles.label, responsiveStyles.label]}>Positions?: <Text style={styles.value}>{positions.length}</Text></Text>
-              <Text style={[styles.label, responsiveStyles.label]}>Current Index: <Text style={styles.value}>{currentIndex}</Text></Text>
-              <Text style={[styles.label, responsiveStyles.label]}>Can Undo: <Text style={styles.value}>{canUndo ? 'Yes' : 'No'}</Text></Text>
-              <Text style={[styles.label, responsiveStyles.label]}>Can Redo: <Text style={styles.value}>{canRedo ? 'Yes' : 'No'}</Text></Text>
-              {/* <Button title="Test Move e2-e4" onPress={() => makeMove('e2', 'e4')} /> */}
-              <TouchableOpacity
-                style={[styles.customButton, !canUndo && styles.disabledButton]}
-                onPress={() => {
-                  if (isDemoRunning) {
-                    stopAutoMovesRef.current = true;
-                    setIsDemoRunning(false);
-                    useChessStore.getState().clearArrows();
-                  }
-                  undo();
-                }}
-                disabled={!canUndo}
-              >
-                <Text style={[styles.customButtonText, canUndo ? { color: '#f0d9b5' } : { color: '#8a8a8a' }]}>Undo</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.customButton, !canRedo && styles.disabledButton]}
-                onPress={() => {
-                  if (isDemoRunning) {
-                    stopAutoMovesRef.current = true;
-                    setIsDemoRunning(false);
-                    useChessStore.getState().clearArrows();
-                  }
-                  redo();
-                }}
-                disabled={!canRedo}
-              >
-                <Text style={[styles.customButtonText, canRedo ? { color: '#f0d9b5' } : { color: '#8a8a8a' }]}>Redo</Text>
-              </TouchableOpacity>
+            <View style={styles.infoSection}>
+              <View style={[styles.infoItem, styles.controlRow]}>
+                <Text style={[styles.label, responsiveStyles.label]}>
+                  Positions:
+                </Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    styles.controlInput,
+                    responsiveStyles.input,
+                    styles.inputDisabled,
+                    styles.infoInput,
+                  ]}
+                  value={String(positions.length)}
+                  editable={false}
+                  caretHidden={true}
+                  accessibilityLabel="Positions"
+                />
+              </View>
+
+              <View style={[styles.infoItem, styles.controlRow]}>
+                <Text style={[styles.label, responsiveStyles.label]}>
+                  Current Index:
+                </Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    styles.controlInput,
+                    responsiveStyles.input,
+                    styles.inputDisabled,
+                    styles.infoInput,
+                  ]}
+                  value={String(currentIndex)}
+                  editable={false}
+                  caretHidden={true}
+                  accessibilityLabel="Current Index"
+                />
+              </View>
+
+              {/* <View style={[styles.controlRow, { alignItems: 'center' }]}>
+              <Text style={[styles.label, responsiveStyles.label]}>Can Undo:</Text>
+              <TextInput
+                style={[styles.input, styles.controlInput, responsiveStyles.input, styles.inputDisabled]}
+                value={canUndo ? 'Yes' : 'No'}
+                editable={false}
+                caretHidden={true}
+                accessibilityLabel="Can Undo"
+              />
+            </View>
+
+            <View style={[styles.controlRow, { alignItems: 'center' }]}>
+              <Text style={[styles.label, responsiveStyles.label]}>Can Redo:</Text>
+              <TextInput
+                style={[styles.input, styles.controlInput, responsiveStyles.input, styles.inputDisabled]}
+                value={canRedo ? 'Yes' : 'No'}
+                editable={false}
+                caretHidden={true}
+                accessibilityLabel="Can Redo"
+              />
+            </View> */}
+
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.customButton,
+                    !canUndo && styles.disabledButton,
+                  ]}
+                  onPress={() => {
+                    if (isDemoRunning) {
+                      stopAutoMovesRef.current = true;
+                      setIsDemoRunning(false);
+                      useChessStore.getState().clearArrows();
+                    }
+                    undo();
+                  }}
+                  disabled={!canUndo}
+                >
+                  <Text
+                    style={[
+                      styles.customButtonText,
+                      canUndo
+                        ? styles.undoRedoTextActive
+                        : styles.undoRedoTextDisabled,
+                    ]}
+                  >
+                    Undo
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.customButton,
+                    !canRedo && styles.disabledButton,
+                  ]}
+                  onPress={() => {
+                    if (isDemoRunning) {
+                      stopAutoMovesRef.current = true;
+                      setIsDemoRunning(false);
+                      useChessStore.getState().clearArrows();
+                    }
+                    redo();
+                  }}
+                  disabled={!canRedo}
+                >
+                  <Text
+                    style={[
+                      styles.customButtonText,
+                      canRedo
+                        ? styles.undoRedoTextActive
+                        : styles.undoRedoTextDisabled,
+                    ]}
+                  >
+                    Redo
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
         </View>
@@ -582,7 +666,9 @@ export default function App() {
                   setMode(tab.key as typeof mode);
                 }}
               >
-                <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+                <Text
+                  style={[styles.tabText, isActive && styles.tabTextActive]}
+                >
                   {tab.label}
                 </Text>
               </Pressable>
@@ -696,6 +782,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+  },
+  infoSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  infoInput: {
+    flex: 0,
+    minWidth: 48,
+    maxWidth: 72,
+  },
+  undoRedoTextActive: {
+    color: '#f0d9b5',
+  },
+  undoRedoTextDisabled: {
+    color: '#8a8a8a',
   },
   customButton: {
     paddingHorizontal: 12,

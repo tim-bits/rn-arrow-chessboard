@@ -1,5 +1,13 @@
 import * as React from 'react';
-import { Easing, interpolate, runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import {
+  Easing,
+  interpolate,
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import {
   MOVE_GLIDE_BASE_MS,
   MOVE_GLIDE_MAX_MS,
@@ -10,7 +18,7 @@ import {
 import type { Square } from '../../types/shared';
 import { squareToPixel } from '../../utils/boardGeometry';
 import { readManualMoveStart } from '../../utils/interactionTiming';
-import { useChessStore, chessSelectors, type ChessState } from '../../store/chessStore';
+import { useChessStore, chessSelectors } from '../../store/chessStore';
 import { useDragState } from './useDragState';
 import { useChessInteraction } from './useChessInteraction';
 import { useChessGestures } from './useChessGestures';
@@ -53,16 +61,21 @@ export function useChessOrchestration({
   const isCheck = chessSelectors.useIsCheck();
   const isCheckmate = chessSelectors.useIsCheckmate();
   const kingSquare = chessSelectors.useKingSquare();
-  const legalMovesSet = React.useMemo(() => new Set(legalMoves as string[]), [legalMoves]);
+  const legalMovesSet = React.useMemo(
+    () => new Set(legalMoves as string[]),
+    [legalMoves]
+  );
 
   const { performMove } = useChessInteraction({ autoPromoteToQueen, onMove });
   const wrappedPerformMove = React.useCallback(
-    (from: Square, to: Square, promotion?: string) => performMove(from, to, promotion, handlePromotion),
+    (from: Square, to: Square, promotion?: string) =>
+      performMove(from, to, promotion, handlePromotion),
     [performMove, handlePromotion]
   );
 
   // Drag state
-  const { dragX, dragY, isDragging, draggedPiece, setDraggedPiece } = useDragState();
+  const { dragX, dragY, isDragging, draggedPiece, setDraggedPiece } =
+    useDragState();
   const [isDraggingFlag, setIsDraggingFlag] = React.useState(false);
   useAnimatedReaction(
     () => isDragging.value,
@@ -102,8 +115,16 @@ export function useChessOrchestration({
   }, [animatingMove, storeBoard]);
 
   const movePieceStyle = useAnimatedStyle(() => {
-    const x = interpolate(moveProgress.value, [0, 1], [moveFromX.value, moveToX.value]);
-    const y = interpolate(moveProgress.value, [0, 1], [moveFromY.value, moveToY.value]);
+    const x = interpolate(
+      moveProgress.value,
+      [0, 1],
+      [moveFromX.value, moveToX.value]
+    );
+    const y = interpolate(
+      moveProgress.value,
+      [0, 1],
+      [moveFromY.value, moveToY.value]
+    );
     return {
       opacity: moveOpacity.value,
       transform: [
@@ -152,7 +173,12 @@ export function useChessOrchestration({
     );
     const manual = readManualMoveStart();
     const currentMove = animatedMoveRef.current;
-    if (manual && currentMove && manual.from === currentMove.from && manual.to === currentMove.to) {
+    if (
+      manual &&
+      currentMove &&
+      manual.from === currentMove.from &&
+      manual.to === currentMove.to
+    ) {
       const delta = Date.now() - manual.ts;
       log(
         `[Timing] manual move -> animation complete ${currentMove.from}->${currentMove.to} ${delta}ms kind=${manual.kind} token=${manual.token}`
@@ -163,12 +189,12 @@ export function useChessOrchestration({
 
     // Clear overlay immediately and process queue (no extra frame delay)
     // Clear overlay on next frame to avoid a one-frame gap
-      requestAnimationFrame(() => {
-        if (moveAnimIdRef.current !== id) return;
-        setAnimatedMove(null);
-        manualOverlayMoveKeyRef.current = null;
-        useChessStore.getState().processQueue();
-      });
+    requestAnimationFrame(() => {
+      if (moveAnimIdRef.current !== id) return;
+      setAnimatedMove(null);
+      manualOverlayMoveKeyRef.current = null;
+      useChessStore.getState().processQueue();
+    });
   }, []);
 
   const startManualOverlay = React.useCallback(
@@ -210,7 +236,8 @@ export function useChessOrchestration({
         effectiveOrientation
       );
 
-      const useDragRelease = kind === 'drag' && typeof x === 'number' && typeof y === 'number';
+      const useDragRelease =
+        kind === 'drag' && typeof x === 'number' && typeof y === 'number';
 
       const fromX = useDragRelease
         ? x - effectiveBoardSize / 8 / 2
@@ -234,7 +261,8 @@ export function useChessOrchestration({
         ? DRAG_SNAP_MS
         : clamp(
             MOVE_GLIDE_BASE_MS +
-              MOVE_GLIDE_PER_SQUARE_MS * Math.max(0, squareDistance(from, to) - 1),
+              MOVE_GLIDE_PER_SQUARE_MS *
+                Math.max(0, squareDistance(from, to) - 1),
             MOVE_GLIDE_MIN_MS,
             MOVE_GLIDE_MAX_MS
           );
@@ -374,7 +402,8 @@ export function useChessOrchestration({
     let captured: { square: Square; image: any } | undefined;
     if (moveData.captured) {
       const capturedColor = moveData.color === 'w' ? 'b' : 'w';
-      const capturedImage = PIECE_IMAGES[`${capturedColor}${moveData.captured.toUpperCase()}`];
+      const capturedImage =
+        PIECE_IMAGES[`${capturedColor}${moveData.captured.toUpperCase()}`];
       if (capturedImage) {
         const isEnPassant = moveData.flags?.includes('e');
         const capturedSquare = isEnPassant
@@ -416,7 +445,8 @@ export function useChessOrchestration({
 
     const duration = clamp(
       MOVE_GLIDE_BASE_MS +
-        MOVE_GLIDE_PER_SQUARE_MS * Math.max(0, squareDistance(moveData.from, moveData.to) - 1),
+        MOVE_GLIDE_PER_SQUARE_MS *
+          Math.max(0, squareDistance(moveData.from, moveData.to) - 1),
       MOVE_GLIDE_MIN_MS,
       MOVE_GLIDE_MAX_MS
     );
@@ -426,15 +456,11 @@ export function useChessOrchestration({
       easing: Easing.inOut(Easing.cubic),
     };
 
-    moveProgress.value = withTiming(
-      1,
-      timingConfig,
-      (finished: boolean) => {
-        'worklet';
-        if (!finished) return;
-        runOnJS(clearAnimatedMove)(id);
-      }
-    );
+    moveProgress.value = withTiming(1, timingConfig, (finished: boolean) => {
+      'worklet';
+      if (!finished) return;
+      runOnJS(clearAnimatedMove)(id);
+    });
   }, [
     animatingMove,
     animatedMove,

@@ -55,6 +55,7 @@ export const BoardView: React.FC<BoardViewProps> = ({
           legalMovesSet={legalMovesSet}
           isCheck={isCheck}
           isCheckmate={isCheckmate}
+          isStalemate={isStalemate}
           kingSquare={kingSquare}
           draggedSquare={draggedSquare}
           animatedFrom={animatedFrom}

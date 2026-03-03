@@ -1,6 +1,7 @@
 # Pawn Promotion Dialog Fix - Summary
 
 ## Problem
+
 Despite setting `autoPromoteToQueen={false}`, the PromotionDialog was never displayed. The issue had two root causes:
 
 1. **PromotionDialog wasn't integrated** into ChessSurfaceInteractive - the component existed but wasn't rendered
@@ -9,6 +10,7 @@ Despite setting `autoPromoteToQueen={false}`, the PromotionDialog was never disp
 ## Solution Implemented
 
 ### 1. ChessSurfaceInteractive Changes
+
 - **Added PromotionDialog import**
 - **Added promotion state management**: `const [promotionData, setPromotionData] = React.useState<{ from: Square; to: Square; color: 'w' | 'b' } | null>(null)`
 - **Fixed performMove logic**:
@@ -23,6 +25,7 @@ Despite setting `autoPromoteToQueen={false}`, the PromotionDialog was never disp
 - **Added PromotionDialog component** to render below the board
 
 ### 2. Example App Updates
+
 - **Updated FEN**: Changed to `'r7/pp4k1/2n5/3P4/1p6/8/8/R2BK2R w - - 0 1'`
   - White pawn on d5 (ready to take pieces and promote)
   - Black pawn on b4
@@ -37,11 +40,14 @@ Despite setting `autoPromoteToQueen={false}`, the PromotionDialog was never disp
   6. **White pawn: b7×a8=? (PROMOTION - triggers dialog)**
 
 ## Testing
+
 When you run the demo:
+
 1. The first 5 moves execute automatically
 2. On move 6 (b7→a8), the **PromotionDialog will appear** allowing you to select Q, R, B, or N
 3. After selection, the pawn promotes and move completes
 
 ## Files Modified
+
 - `src/ui/ChessSurfaceInteractive.tsx` - Integrated PromotionDialog and fixed promotion logic
 - `example/src/App.tsx` - Updated FEN and demo sequence for promotion testing

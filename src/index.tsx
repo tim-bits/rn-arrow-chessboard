@@ -5,7 +5,10 @@ export { default as PromotionDialog } from './ui/PromotionDialog';
 
 // Export hooks
 export { useChessboardAnimation } from './hooks/useChessboardAnimation';
-export { useResponsiveSize, useResponsiveCoordinateSize } from './hooks/useResponsiveSize';
+export {
+  useResponsiveSize,
+  useResponsiveCoordinateSize,
+} from './hooks/useResponsiveSize';
 
 // Export store
 export { useChessStore, chessSelectors } from './store/chessStore';

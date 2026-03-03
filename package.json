@@ -32,7 +32,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace rn-chessbord-lib-example",
+    "example": "yarn workspace rn-arrow-chessboard-example",
     "clean": "del-cli lib",
     "prepare": "bob build",
     "typecheck": "tsc",
@@ -48,14 +48,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tim-bits/rn-chessbord-lib.git"
+    "url": "git+https://github.com/tim-bits/rn-arrow-chessboard.git"
   },
   "author": "Tim Bits <tim.beats@proton.me> (https://github.com/tim-bits)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tim-bits/rn-chessbord-lib/issues"
+    "url": "https://github.com/tim-bits/rn-arrow-chessboard/issues"
   },
-  "homepage": "https://github.com/tim-bits/rn-chessbord-lib#readme",
+  "homepage": "https://github.com/tim-bits/rn-arrow-chessboard#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
@@ -129,7 +129,8 @@
     "singleQuote": true,
     "tabWidth": 2,
     "trailingComma": "es5",
-    "useTabs": false
+    "useTabs": false,
+    "endOfLine": "auto"
   },
   "commitlint": {
     "extends": [

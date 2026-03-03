@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "rn-chessbord-lib": ["./src/index"]
+      "rn-arrow-chessboard": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

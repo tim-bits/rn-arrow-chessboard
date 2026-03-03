@@ -3,6 +3,7 @@
 ## Current Issues
 
 The component is ~300 lines and handles:
+
 1. ✅ State management (promotion, sync props to store)
 2. ✅ Gesture handling (drag, tap, pan)
 3. ✅ Move logic (validation, promotion detection)
@@ -91,12 +92,18 @@ export const BoardSquare: React.FC<BoardSquareProps> = ({
   isDragged = false,
 }) => {
   const bg = isLight ? '#f0d9b5' : '#b58863';
-  const pieceImage = piece ? PIECE_IMAGES[`${piece.color}${piece.type.toUpperCase()}`] : null;
+  const pieceImage = piece
+    ? PIECE_IMAGES[`${piece.color}${piece.type.toUpperCase()}`]
+    : null;
 
   return (
     <View style={[styles.square, { backgroundColor: bg }]}>
       {pieceImage && !isDragged ? (
-        <Image source={pieceImage} style={styles.pieceImage} resizeMode="contain" />
+        <Image
+          source={pieceImage}
+          style={styles.pieceImage}
+          resizeMode="contain"
+        />
       ) : null}
       {isLegal && !isSelected && <View style={styles.legalMoveDot} />}
       {isSelected && <View style={styles.selectedBorder} />}
@@ -108,28 +115,34 @@ export const BoardSquare: React.FC<BoardSquareProps> = ({
 const styles = StyleSheet.create({
   square: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   pieceImage: { width: '80%', height: '80%' },
-  legalMoveDot: { 
-    position: 'absolute', 
-    width: 12, 
-    height: 12, 
-    borderRadius: 6, 
-    backgroundColor: 'rgba(0,0,0,0.3)', 
-    top: '50%', 
-    left: '50%', 
-    marginTop: -6, 
-    marginLeft: -6 
+  legalMoveDot: {
+    position: 'absolute',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    top: '50%',
+    left: '50%',
+    marginTop: -6,
+    marginLeft: -6,
   },
-  selectedBorder: { 
-    position: 'absolute', 
-    top: 0, left: 0, right: 0, bottom: 0, 
-    borderWidth: 3, 
-    borderColor: '#d4af37' 
+  selectedBorder: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderWidth: 3,
+    borderColor: '#d4af37',
   },
-  checkBorder: { 
-    position: 'absolute', 
-    top: 0, left: 0, right: 0, bottom: 0, 
-    borderWidth: 3, 
-    borderColor: '#ff0000' 
+  checkBorder: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderWidth: 3,
+    borderColor: '#ff0000',
   },
 });
 ```
@@ -149,7 +162,10 @@ interface CoordinateLabelsProps {
   fontSize: number;
 }
 
-export const RankLabels: React.FC<CoordinateLabelsProps> = ({ boardSize, fontSize }) => (
+export const RankLabels: React.FC<CoordinateLabelsProps> = ({
+  boardSize,
+  fontSize,
+}) => (
   <View style={[styles.rankLabels, { height: boardSize }]}>
     {['8', '7', '6', '5', '4', '3', '2', '1'].map((rank) => (
       <View key={`rank-${rank}`} style={styles.rankLabel}>
@@ -159,13 +175,11 @@ export const RankLabels: React.FC<CoordinateLabelsProps> = ({ boardSize, fontSiz
   </View>
 );
 
-export const FileLabels: React.FC<CoordinateLabelsProps & { marginLeft: number }> = ({ 
-  boardSize, 
-  fontSize,
-  marginLeft 
-}) => (
+export const FileLabels: React.FC<
+  CoordinateLabelsProps & { marginLeft: number }
+> = ({ boardSize, fontSize, marginLeft }) => (
   <View style={[styles.fileLabels, { width: boardSize, marginLeft }]}>
-    {['a','b','c','d','e','f','g','h'].map((file) => (
+    {['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((file) => (
       <View key={`file-${file}`} style={styles.fileLabel}>
         <Text style={[styles.coordinateText, { fontSize }]}>{file}</Text>
       </View>
@@ -174,31 +188,31 @@ export const FileLabels: React.FC<CoordinateLabelsProps & { marginLeft: number }
 );
 
 const styles = StyleSheet.create({
-  rankLabels: { 
-    flexDirection: 'column', 
-    width: 40, 
-    marginRight: 4, 
-    justifyContent: 'space-around' 
+  rankLabels: {
+    flexDirection: 'column',
+    width: 40,
+    marginRight: 4,
+    justifyContent: 'space-around',
   },
-  rankLabel: { 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    height: 40 
+  rankLabel: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
   },
-  fileLabels: { 
-    flexDirection: 'row', 
-    marginTop: 4 
+  fileLabels: {
+    flexDirection: 'row',
+    marginTop: 4,
   },
-  fileLabel: { 
-    flex: 1, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    height: 20 
+  fileLabel: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 20,
   },
-  coordinateText: { 
-    fontSize: 12, 
-    fontWeight: '600', 
-    color: '#666' 
+  coordinateText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#666',
   },
 });
 ```
@@ -252,48 +266,53 @@ interface UseChessInteractionProps {
   onMove?: (move: { from: string; to: string; promotion?: string }) => void;
 }
 
-export const useChessInteraction = ({ 
-  autoPromoteToQueen, 
-  onMove 
+export const useChessInteraction = ({
+  autoPromoteToQueen,
+  onMove,
 }: UseChessInteractionProps) => {
   const makeMove = useChessStore((s: ChessState) => s.makeMove);
-  const setAnimationState = useChessStore((s: ChessState) => s.setAnimationState);
+  const setAnimationState = useChessStore(
+    (s: ChessState) => s.setAnimationState
+  );
   const getChess = useChessStore((s: ChessState) => s.chess);
-  
+
   const onMoveRef = useRef(onMove);
   useEffect(() => {
     onMoveRef.current = onMove;
   }, [onMove]);
 
-  const performMove = useCallback((
-    from: Square, 
-    to: Square, 
-    promotion?: string,
-    onPromotion?: (from: Square, to: Square) => void
-  ) => {
-    // Query legal moves to detect if this is a promotion move
-    const legalMoves = getChess.moves({ square: from, verbose: true }) || [];
-    const targetMove = legalMoves.find((m: any) => m.to === to);
-    
-    // Check if this is a promotion move
-    if (targetMove && targetMove.flags.includes('p')) {
-      if (autoPromoteToQueen) {
-        promotion = 'q';
-      } else {
-        if (!promotion) {
-          onPromotion?.(from, to);
-          return false;
+  const performMove = useCallback(
+    (
+      from: Square,
+      to: Square,
+      promotion?: string,
+      onPromotion?: (from: Square, to: Square) => void
+    ) => {
+      // Query legal moves to detect if this is a promotion move
+      const legalMoves = getChess.moves({ square: from, verbose: true }) || [];
+      const targetMove = legalMoves.find((m: any) => m.to === to);
+
+      // Check if this is a promotion move
+      if (targetMove && targetMove.flags.includes('p')) {
+        if (autoPromoteToQueen) {
+          promotion = 'q';
+        } else {
+          if (!promotion) {
+            onPromotion?.(from, to);
+            return false;
+          }
         }
       }
-    }
-    
-    setAnimationState('animating');
-    const success = makeMove(from, to, promotion);
-    if (success) {
-      onMoveRef.current?.({ from, to, promotion });
-    }
-    return success;
-  }, [makeMove, autoPromoteToQueen, getChess, setAnimationState]);
+
+      setAnimationState('animating');
+      const success = makeMove(from, to, promotion);
+      if (success) {
+        onMoveRef.current?.({ from, to, promotion });
+      }
+      return success;
+    },
+    [makeMove, autoPromoteToQueen, getChess, setAnimationState]
+  );
 
   return {
     performMove,
@@ -313,7 +332,11 @@ import { Gesture } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
 import type { Square } from '../types/shared';
 import { pixelToSquare } from '../utils/boardGeometry';
-import { useChessStore, chessSelectors, type ChessState } from '../store/chessStore';
+import {
+  useChessStore,
+  chessSelectors,
+  type ChessState,
+} from '../store/chessStore';
 import type { DraggedPiece } from './useDragState';
 import { PIECE_IMAGES } from '../ui/constants/pieceImages';
 
@@ -347,69 +370,96 @@ export const useChessGestures = ({
     selectedSquareRef.current = selectedSquare;
   }, [selectedSquare]);
 
-  const handleDragStart = useCallback((x: number, y: number) => {
-    useChessStore.getState().bumpMoveToken();
-    const sq = pixelToSquare(x, y, boardSize, boardSize, orientation);
-    if (sq) {
-      const piece = getChess.get(sq);
-      if (piece) {
-        const pieceImage = PIECE_IMAGES[`${piece.color}${piece.type.toUpperCase()}`];
-        setDraggedPiece({ image: pieceImage, square: sq });
-        setDraggedSquare(sq);
+  const handleDragStart = useCallback(
+    (x: number, y: number) => {
+      useChessStore.getState().bumpMoveToken();
+      const sq = pixelToSquare(x, y, boardSize, boardSize, orientation);
+      if (sq) {
+        const piece = getChess.get(sq);
+        if (piece) {
+          const pieceImage =
+            PIECE_IMAGES[`${piece.color}${piece.type.toUpperCase()}`];
+          setDraggedPiece({ image: pieceImage, square: sq });
+          setDraggedSquare(sq);
+        }
+        selectSquare(sq);
       }
-      selectSquare(sq);
-    }
-  }, [boardSize, orientation, selectSquare, getChess, setDraggedSquare, setDraggedPiece]);
+    },
+    [
+      boardSize,
+      orientation,
+      selectSquare,
+      getChess,
+      setDraggedSquare,
+      setDraggedPiece,
+    ]
+  );
 
-  const handleDragEnd = useCallback((x: number, y: number) => {
-    const to = pixelToSquare(x, y, boardSize, boardSize, orientation);
-    const from = selectedSquareRef.current;
-    
-    setDraggedPiece(null);
-    setDraggedSquare(null);
-    
-    if (to && from) performMove(from, to);
-  }, [boardSize, orientation, performMove, setDraggedSquare, setDraggedPiece]);
+  const handleDragEnd = useCallback(
+    (x: number, y: number) => {
+      const to = pixelToSquare(x, y, boardSize, boardSize, orientation);
+      const from = selectedSquareRef.current;
 
-  const handleTap = useCallback((x: number, y: number) => {
-    useChessStore.getState().bumpMoveToken();
-    const sq = pixelToSquare(x, y, boardSize, boardSize, orientation);
-    if (!sq) return;
-    const from = selectedSquareRef.current;
-    if (from && legalMoves.includes(sq)) {
-      performMove(from, sq);
-    } else {
-      selectSquare(sq);
-    }
-  }, [boardSize, orientation, legalMoves, performMove, selectSquare]);
+      setDraggedPiece(null);
+      setDraggedSquare(null);
 
-  const dragGesture = useMemo(() => Gesture.Pan()
-    .minDistance(5)
-    .onStart((event: any) => {
-      const { x, y } = event;
-      isDragging.value = true;
-      dragX.value = x;
-      dragY.value = y;
-      runOnJS(handleDragStart)(x, y);
-    })
-    .onUpdate((event: any) => {
-      const { x, y } = event;
-      dragX.value = x;
-      dragY.value = y;
-    })
-    .onEnd((event: any) => {
-      const { x, y } = event;
-      isDragging.value = false;
-      runOnJS(handleDragEnd)(x, y);
-    })
-  , [handleDragEnd, handleDragStart, dragX, dragY, isDragging]);
+      if (to && from) performMove(from, to);
+    },
+    [boardSize, orientation, performMove, setDraggedSquare, setDraggedPiece]
+  );
 
-  const tapGesture = useMemo(() => Gesture.Tap().onEnd((event: any) => {
-    const { x, y } = event;
-    runOnJS(handleTap)(x, y);
-  }), [handleTap]);
+  const handleTap = useCallback(
+    (x: number, y: number) => {
+      useChessStore.getState().bumpMoveToken();
+      const sq = pixelToSquare(x, y, boardSize, boardSize, orientation);
+      if (!sq) return;
+      const from = selectedSquareRef.current;
+      if (from && legalMoves.includes(sq)) {
+        performMove(from, sq);
+      } else {
+        selectSquare(sq);
+      }
+    },
+    [boardSize, orientation, legalMoves, performMove, selectSquare]
+  );
 
-  const combinedGesture = useMemo(() => Gesture.Race(dragGesture, tapGesture), [dragGesture, tapGesture]);
+  const dragGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .minDistance(5)
+        .onStart((event: any) => {
+          const { x, y } = event;
+          isDragging.value = true;
+          dragX.value = x;
+          dragY.value = y;
+          runOnJS(handleDragStart)(x, y);
+        })
+        .onUpdate((event: any) => {
+          const { x, y } = event;
+          dragX.value = x;
+          dragY.value = y;
+        })
+        .onEnd((event: any) => {
+          const { x, y } = event;
+          isDragging.value = false;
+          runOnJS(handleDragEnd)(x, y);
+        }),
+    [handleDragEnd, handleDragStart, dragX, dragY, isDragging]
+  );
+
+  const tapGesture = useMemo(
+    () =>
+      Gesture.Tap().onEnd((event: any) => {
+        const { x, y } = event;
+        runOnJS(handleTap)(x, y);
+      }),
+    [handleTap]
+  );
+
+  const combinedGesture = useMemo(
+    () => Gesture.Race(dragGesture, tapGesture),
+    [dragGesture, tapGesture]
+  );
 
   return {
     combinedGesture,
@@ -447,7 +497,7 @@ export const DraggedPiece: React.FC<DraggedPieceProps> = ({
 }) => {
   const draggedPieceStyle = useAnimatedStyle(() => {
     if (!isDragging.value) return { opacity: 0 };
-    
+
     return {
       position: 'absolute',
       width: squareSize * 1.2,
@@ -463,10 +513,10 @@ export const DraggedPiece: React.FC<DraggedPieceProps> = ({
 
   return (
     <Animated.View style={draggedPieceStyle}>
-      <Image 
-        source={draggedPiece.image} 
-        style={{ width: '100%', height: '100%' }} 
-        resizeMode="contain" 
+      <Image
+        source={draggedPiece.image}
+        style={{ width: '100%', height: '100%' }}
+        resizeMode="contain"
       />
     </Animated.View>
   );
@@ -482,10 +532,17 @@ export const DraggedPiece: React.FC<DraggedPieceProps> = ({
 ```typescript
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { GestureHandlerRootView, GestureDetector } from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  GestureDetector,
+} from 'react-native-gesture-handler';
 import type { FenString, Square } from '../types/shared';
 import { indicesToSquare } from '../utils/boardGeometry';
-import { useChessStore, chessSelectors, type ChessState } from '../store/chessStore';
+import {
+  useChessStore,
+  chessSelectors,
+  type ChessState,
+} from '../store/chessStore';
 import { useResponsiveCoordinateSize } from '../hooks/useResponsiveSize';
 import { useDragState } from '../hooks/useDragState';
 import { useChessInteraction } from '../hooks/useChessInteraction';
@@ -505,27 +562,30 @@ interface ChessSurfaceInteractiveProps {
   onMove?: (move: { from: string; to: string; promotion?: string }) => void;
 }
 
-export default function ChessSurfaceInteractive({ 
-  position = 'start', 
-  orientation = 'white', 
-  boardSize = 320, 
-  showCoordinates = false, 
-  autoPromoteToQueen = true, 
-  onMove 
+export default function ChessSurfaceInteractive({
+  position = 'start',
+  orientation = 'white',
+  boardSize = 320,
+  showCoordinates = false,
+  autoPromoteToQueen = true,
+  onMove,
 }: ChessSurfaceInteractiveProps) {
   // State
-  const [promotionData, setPromotionData] = React.useState<{ 
-    from: Square; 
-    to: Square; 
-    color: 'w' | 'b' 
+  const [promotionData, setPromotionData] = React.useState<{
+    from: Square;
+    to: Square;
+    color: 'w' | 'b';
   } | null>(null);
 
   // Drag state
-  const { dragX, dragY, isDragging, draggedPiece, setDraggedPiece } = useDragState();
+  const { dragX, dragY, isDragging, draggedPiece, setDraggedPiece } =
+    useDragState();
 
   // Store sync
   const setPosition = useChessStore((s: ChessState) => s.setPosition);
-  const setAutoPromoteToQueen = useChessStore((s: ChessState) => s.setAutoPromoteToQueen);
+  const setAutoPromoteToQueen = useChessStore(
+    (s: ChessState) => s.setAutoPromoteToQueen
+  );
 
   React.useEffect(() => {
     setAutoPromoteToQueen(autoPromoteToQueen);
@@ -545,7 +605,8 @@ export default function ChessSurfaceInteractive({
   const isCheckmate = chessSelectors.useIsCheckmate();
   const kingSquare = chessSelectors.useKingSquare();
 
-  const effectiveOrientation = orientation !== 'white' ? orientation : storeOrientation;
+  const effectiveOrientation =
+    orientation !== 'white' ? orientation : storeOrientation;
   const squareSize = boardSize / 8;
 
   // Interaction logic
@@ -557,12 +618,15 @@ export default function ChessSurfaceInteractive({
   const handlePromotion = React.useCallback((from: Square, to: Square) => {
     const getChess = useChessStore.getState().chess;
     const piece = getChess.get(from);
-    setPromotionData({ from, to, color: piece?.color as 'w' | 'b' || 'w' });
+    setPromotionData({ from, to, color: (piece?.color as 'w' | 'b') || 'w' });
   }, []);
 
-  const wrappedPerformMove = React.useCallback((from: Square, to: Square, promotion?: string) => {
-    return performMove(from, to, promotion, handlePromotion);
-  }, [performMove, handlePromotion]);
+  const wrappedPerformMove = React.useCallback(
+    (from: Square, to: Square, promotion?: string) => {
+      return performMove(from, to, promotion, handlePromotion);
+    },
+    [performMove, handlePromotion]
+  );
 
   // Gestures
   const { combinedGesture } = useChessGestures({
@@ -576,13 +640,16 @@ export default function ChessSurfaceInteractive({
   });
 
   // Promotion handlers
-  const handlePromotionSelect = React.useCallback((piece: 'q' | 'r' | 'b' | 'n') => {
-    if (promotionData) {
-      const { from, to } = promotionData;
-      setPromotionData(null);
-      performMove(from, to, piece);
-    }
-  }, [promotionData, performMove]);
+  const handlePromotionSelect = React.useCallback(
+    (piece: 'q' | 'r' | 'b' | 'n') => {
+      if (promotionData) {
+        const { from, to } = promotionData;
+        setPromotionData(null);
+        performMove(from, to, piece);
+      }
+    },
+    [promotionData, performMove]
+  );
 
   const handlePromotionCancel = React.useCallback(() => {
     setPromotionData(null);
@@ -599,17 +666,31 @@ export default function ChessSurfaceInteractive({
           )}
 
           <GestureDetector gesture={combinedGesture}>
-            <View style={[styles.boardContainer, { width: boardSize, height: boardSize }]}>
-              <View style={[styles.board, { width: boardSize, height: boardSize }]}>
+            <View
+              style={[
+                styles.boardContainer,
+                { width: boardSize, height: boardSize },
+              ]}
+            >
+              <View
+                style={[styles.board, { width: boardSize, height: boardSize }]}
+              >
                 {board.map((rank: any, rIdx: number) => (
                   <View key={`r-${rIdx}`} style={styles.row}>
                     {rank.map((sq: any, fIdx: number) => {
                       const isLight = (rIdx + fIdx) % 2 === 0;
-                      const squareNotation = indicesToSquare(rIdx, fIdx, effectiveOrientation);
+                      const squareNotation = indicesToSquare(
+                        rIdx,
+                        fIdx,
+                        effectiveOrientation
+                      );
                       const isSelected = selectedSquare === squareNotation;
                       const isLegal = legalMoves.includes(squareNotation);
-                      const isKingInCheck = (isCheck || isCheckmate) && squareNotation === kingSquare;
-                      const isDraggedSquare = draggedPiece?.square === squareNotation;
+                      const isKingInCheck =
+                        (isCheck || isCheckmate) &&
+                        squareNotation === kingSquare;
+                      const isDraggedSquare =
+                        draggedPiece?.square === squareNotation;
 
                       return (
                         <BoardSquare
@@ -627,14 +708,14 @@ export default function ChessSurfaceInteractive({
                   </View>
                 ))}
               </View>
-              
-              <ArrowOverlay 
-                arrows={arrows} 
-                boardWidth={boardSize} 
-                boardHeight={boardSize} 
-                orientation={effectiveOrientation} 
+
+              <ArrowOverlay
+                arrows={arrows}
+                boardWidth={boardSize}
+                boardHeight={boardSize}
+                orientation={effectiveOrientation}
               />
-              
+
               <DraggedPiece
                 draggedPiece={draggedPiece}
                 dragX={dragX}
@@ -656,8 +737,8 @@ export default function ChessSurfaceInteractive({
         )}
 
         {showCoordinates && (
-          <FileLabels 
-            boardSize={boardSize} 
+          <FileLabels
+            boardSize={boardSize}
             fontSize={coordinateFontSize}
             marginLeft={40}
           />
@@ -682,6 +763,7 @@ const styles = StyleSheet.create({
 ## Benefits of Refactoring
 
 ### ✅ Single Responsibility
+
 - **ChessSurfaceInteractive**: Orchestration only
 - **BoardSquare**: Square rendering
 - **CoordinateLabels**: Label rendering
@@ -691,7 +773,9 @@ const styles = StyleSheet.create({
 - **useChessGestures**: Gesture handling
 
 ### ✅ Testability
+
 Each piece can be tested independently:
+
 ```typescript
 // Test gesture logic without rendering
 const { result } = renderHook(() => useChessGestures({...}));
@@ -701,7 +785,9 @@ render(<BoardSquare isLight={true} ... />);
 ```
 
 ### ✅ Reusability
+
 Components can be reused:
+
 ```typescript
 // Use BoardSquare in different contexts
 <BoardSquare piece={...} isLight={true} />
@@ -711,11 +797,13 @@ const gestures = useChessGestures({...});
 ```
 
 ### ✅ Maintainability
+
 - Changes are localized
 - Easier to understand each piece
 - Clearer dependencies
 
 ### ✅ Performance
+
 - Can memoize individual components
 - Easier to identify re-render issues
 
@@ -724,23 +812,27 @@ const gestures = useChessGestures({...});
 ## Migration Strategy
 
 ### Option 1: Big Bang (Not Recommended)
+
 Replace everything at once - risky
 
 ### Option 2: Incremental (Recommended)
 
 **Week 1: Extract Constants & Hooks**
+
 1. Create `pieceImages.ts`
 2. Create `useDragState.ts`
 3. Update ChessSurfaceInteractive to use them
 4. Test thoroughly
 
 **Week 2: Extract Components**
+
 1. Create `BoardSquare.tsx`
 2. Create `CoordinateLabels.tsx`
 3. Update ChessSurfaceInteractive to use them
 4. Test thoroughly
 
 **Week 3: Extract Remaining Logic**
+
 1. Create `useChessInteraction.ts`
 2. Create `useChessGestures.ts`
 3. Create `DraggedPiece.tsx`
@@ -752,9 +844,11 @@ Replace everything at once - risky
 ## File Size Comparison
 
 **Before:**
+
 - ChessSurfaceInteractive.tsx: ~300 lines
 
 **After:**
+
 - ChessSurfaceInteractive.tsx: ~150 lines ✅
 - BoardSquare.tsx: ~60 lines
 - CoordinateLabels.tsx: ~50 lines
@@ -771,12 +865,14 @@ Replace everything at once - risky
 ## Should You Do This?
 
 ### ✅ Yes, if:
+
 - You plan to add more features
 - Multiple developers work on the codebase
 - You need better testing coverage
 - The component keeps growing
 
 ### ❌ No, if:
+
 - This is a one-off project
 - You're the only developer
 - Component is stable and unlikely to change
@@ -787,12 +883,14 @@ Replace everything at once - risky
 ## Recommendation
 
 **Start with Step 1-3** (constants + simple components):
+
 - Low risk
 - Immediate benefits
 - Easy to test
 - Good foundation for future work
 
 Then decide if further refactoring is worth it based on:
+
 - How often you modify this code
 - Team size
 - Project longevity

@@ -61,6 +61,7 @@ export default function App() {
 Initializes store settings before any chessboard renders.
 
 **Props**
+
 - `moveAnimationDuration?: number` – move animation duration in ms
 - `arrowDisplayDuration?: number` – how long arrows stay visible after render (ms)
 - `children: React.ReactNode`
@@ -84,6 +85,7 @@ Interactive board with gestures, promotion dialog, and arrows.
 ```
 
 **Props**
+
 - `position?: FenString` – board position in FEN, or `"start"` (default)
 - `orientation?: 'white' | 'black'` – board perspective (default: `"white"`)
 - `boardSize?: number` – board size in pixels (default: `320`)
@@ -113,13 +115,16 @@ Read-only board for analysis or display.
 Programmatic move orchestration with arrows and animation timing.
 
 ```tsx
-import { useChessboardAnimation } from 'rn-chessboard-lib';
+import { useChessboardAnimation } from 'rn-arrow-chessboard';
 
 function Orchestrator() {
   const { move, arrows } = useChessboardAnimation();
 
   const play = async () => {
-    await arrows([['e2', 'e4'], ['d2', 'd4']]);
+    await arrows([
+      ['e2', 'e4'],
+      ['d2', 'd4'],
+    ]);
     await move('e2', 'e4');
   };
 
@@ -128,6 +133,7 @@ function Orchestrator() {
 ```
 
 **Returns**
+
 - `move(from, to, promotion?) -> Promise<boolean>`
 - `arrows(pairs) -> Promise<void>`
 - `animationState`
@@ -160,13 +166,18 @@ export interface ChessSuggestionAdapter {
 ### Lichess Cloud Adapter
 
 ```ts
-import { createLichessCloudAdapter } from 'rn-chessboard-lib';
+import { createLichessCloudAdapter } from 'rn-arrow-chessboard';
 
 const adapter = createLichessCloudAdapter({ multiPv: 3 });
-const { arrows, bestMove, eval: evaluation } = await adapter.getSuggestions(fen);
+const {
+  arrows,
+  bestMove,
+  eval: evaluation,
+} = await adapter.getSuggestions(fen);
 ```
 
 Notes:
+
 - Lichess rate limits apply (expect `429` on burst usage).
 - `multiPv` controls how many candidate lines you get back.
 
@@ -201,6 +212,7 @@ If `autoPromoteToQueen` is `false`, promotion moves pause and the promotion dial
 - Library code: `src/**`
 
 If needed:
+
 ```sh
 yarn bob build
 cd example
@@ -231,7 +243,7 @@ The example app includes a Lichess-powered mode that polls Cloud Eval and draws 
 It uses the adapter internally, but the flow is the same if you wire it yourself:
 
 ```ts
-import { createLichessCloudAdapter } from 'rn-chessboard-lib';
+import { createLichessCloudAdapter } from 'rn-arrow-chessboard';
 
 const adapter = createLichessCloudAdapter({ multiPv: 3 });
 const { arrows, bestMove } = await adapter.getSuggestions(fen);
