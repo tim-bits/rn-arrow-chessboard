@@ -179,8 +179,10 @@ const createInitialChess = (fen?: FenString): Chess => {
 const findKingSquare = (chess: Chess, kingColor: 'w' | 'b'): Square | null => {
   const board = chess.board();
   for (let rIdx = 0; rIdx < board.length; rIdx++) {
-    for (let fIdx = 0; fIdx < board[rIdx].length; fIdx++) {
-      const piece = board[rIdx][fIdx];
+    const row = board[rIdx];
+    if (!row) continue;
+    for (let fIdx = 0; fIdx < row.length; fIdx++) {
+      const piece = row[fIdx];
       if (piece && piece.type === 'k' && piece.color === kingColor) {
         return `${String.fromCharCode(97 + fIdx)}${8 - rIdx}` as Square;
       }
@@ -717,15 +719,15 @@ export const useChessStore = create<ChessState>((set: any, get: any) => {
 export const chessSelectors = {
   useFen: () => useChessStore((s: ChessState) => s.fen),
   useChess: () => useChessStore((s: ChessState) => s.chess),
-  useBoard: () => useChessStore((s: ChessState) => s.board, shallow as any),
+  useBoard: () => (useChessStore as any)((s: ChessState) => s.board, shallow),
   useSelectedSquare: () => useChessStore((s: ChessState) => s.selectedSquare),
   useLegalMoves: () =>
-    useChessStore((s: ChessState) => s.legalMoves, shallow as any),
+    (useChessStore as any)((s: ChessState) => s.legalMoves, shallow),
   useSelection: () => {
     const selectedSquare = useChessStore((s: ChessState) => s.selectedSquare);
-    const legalMoves = useChessStore(
+    const legalMoves = (useChessStore as any)(
       (s: ChessState) => s.legalMoves,
-      shallow as any
+      shallow
     );
     return { selectedSquare, legalMoves };
   },
@@ -739,7 +741,7 @@ export const chessSelectors = {
   useKingSquare: () => useChessStore((s: ChessState) => s.kingSquare),
   useOrientation: () => useChessStore((s: ChessState) => s.orientation),
   usePromotion: () => useChessStore((s: ChessState) => s.promotionSquare),
-  useArrows: () => useChessStore((s: ChessState) => s.arrows, shallow as any),
+  useArrows: () => (useChessStore as any)((s: ChessState) => s.arrows, shallow),
   useArrowColor: () => useChessStore((s: ChessState) => s.arrowColor),
   useAnimationState: () => useChessStore((s: ChessState) => s.animationState),
   useMoveAnimationDuration: () =>
@@ -756,7 +758,7 @@ export const chessSelectors = {
   // ============================================================================
   useAnimatingMove: () => useChessStore((s: ChessState) => s.animatingMove),
   usePositions: () =>
-    useChessStore((s: ChessState) => s.positions, shallow as any),
+    (useChessStore as any)((s: ChessState) => s.positions, shallow),
   useCurrentPositionIndex: () =>
     useChessStore((s: ChessState) => s.currentPositionIndex),
   useCanUndo: () =>
@@ -766,5 +768,5 @@ export const chessSelectors = {
       (s: ChessState) => s.currentPositionIndex < s.positions.length - 1
     ),
   useMoveHistory: () =>
-    useChessStore((s: ChessState) => s.moveHistory, shallow as any),
+    (useChessStore as any)((s: ChessState) => s.moveHistory, shallow),
 };

@@ -474,7 +474,7 @@ export default function App() {
             <Switch value={lockScroll} onValueChange={setLockScroll} />
             {mode === 'demo' && (
               <Pressable
-                style={({ pressed }) => [
+                style={({ pressed }: { pressed: boolean }) => [
                   styles.smallButton,
                   { opacity: pressed ? 0.7 : 1 },
                 ]}
@@ -614,25 +614,34 @@ export default function App() {
           arrowDisplayDuration={arrowDisplayDuration}
         >
           <Chessboard
-            key={demoKey}
-            position={initialFen}
-            boardSize={
-              Dimensions.get('window').width > Dimensions.get('window').height
-                ? Dimensions.get('window').width * 0.4
-                : Dimensions.get('window').height * 0.4
-            }
-            showCoordinates={true}
-            autoPromoteToQueen={false}
-            arrowColor={arrowColor}
-            onMove={({ from, to, promotion }) => {
-              log('[App] Move made:', { from, to, promotion });
-            }}
-            onUserInteraction={() => {
-              if (!isDemoRunning) return;
-              stopAutoMovesRef.current = true;
-              useChessStore.getState().clearArrows();
-              return true;
-            }}
+            {...({
+              key: demoKey,
+              position: initialFen,
+              boardSize:
+                Dimensions.get('window').width > Dimensions.get('window').height
+                  ? Dimensions.get('window').width * 0.4
+                  : Dimensions.get('window').height * 0.4,
+              showCoordinates: true,
+              autoPromoteToQueen: false,
+              arrowColor: arrowColor,
+              onMove: ({
+                from,
+                to,
+                promotion,
+              }: {
+                from: string;
+                to: string;
+                promotion?: string;
+              }) => {
+                log('[App] Move made:', { from, to, promotion });
+              },
+              onUserInteraction: () => {
+                if (!isDemoRunning) return;
+                stopAutoMovesRef.current = true;
+                useChessStore.getState().clearArrows();
+                return true;
+              },
+            } as any)}
           />
 
           <ChessDemoEffects

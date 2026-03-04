@@ -1,4 +1,3 @@
-import React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import BoardView from '../../src/ui/components/BoardView';
 import MoveOverlay from '../../src/ui/components/MoveOverlay';
@@ -13,7 +12,6 @@ jest.mock('../../src/ui/components/BoardSquare', () => {
   };
 });
 // Import the mock after it's defined
-// eslint-disable-next-line import/first
 const { BoardSquare: BoardSquareMock } =
   require('../../src/ui/components/BoardSquare') as {
     BoardSquare: jest.Mock;
@@ -35,13 +33,14 @@ describe('BoardView', () => {
   it('renders 64 squares and marks selection/drag', () => {
     BoardSquareMock.mockClear();
     act(() => {
-      renderer.create(
+      (renderer as any).create(
         <BoardView
           rows={rows}
           selectedSquare="e1"
           legalMovesSet={new Set(['e2'])}
           isCheck={false}
           isCheckmate={false}
+          isStalemate={false}
           kingSquare="e8"
           draggedSquare="a1"
           animatedFrom="b2"
@@ -65,9 +64,9 @@ describe('MoveOverlay', () => {
     captured: { square: 'e4', image: fakeImg },
   };
   it('shows moving piece and captured overlay when present', () => {
-    let testRenderer: renderer.ReactTestRenderer;
+    let testRenderer: any;
     act(() => {
-      testRenderer = renderer.create(
+      testRenderer = (renderer as any).create(
         <MoveOverlay
           squareSize={40}
           animatedMove={anim}

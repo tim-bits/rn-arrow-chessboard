@@ -32,7 +32,6 @@ export default defineConfig([
       'lib/',
       '.yarn/**',
       'eslint.config.mjs',
-      'example/__tests__/**',
       'example/jest.setup.js',
     ],
   },

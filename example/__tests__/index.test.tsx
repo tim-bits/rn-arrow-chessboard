@@ -189,7 +189,7 @@ describe('Chess store basics', () => {
   });
 
   test('arrows set and clear', () => {
-    act(() => useChessStore.getState().setArrows([{ from: 'e2', to: 'e4' }]));
+    act(() => useChessStore.getState().setArrows([['e2', 'e4']]));
     expect(useChessStore.getState().arrows.length).toBe(1);
     act(() => useChessStore.getState().clearArrows());
     expect(useChessStore.getState().arrows.length).toBe(0);

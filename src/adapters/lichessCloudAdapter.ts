@@ -13,8 +13,8 @@ type LichessCloudEval = {
 const parseMoves = (pvs: LichessPv[] | undefined) => {
   return (pvs || [])
     .map((pv) => pv?.moves?.split(' ')?.[0])
-    .filter(Boolean)
-    .map((uci) => ({
+    .filter((uci): uci is string => Boolean(uci))
+    .map((uci: string) => ({
       from: uci.slice(0, 2),
       to: uci.slice(2, 4),
       promotion: uci.length >= 5 ? uci.slice(4, 5) : undefined,

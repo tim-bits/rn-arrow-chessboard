@@ -78,7 +78,7 @@ const ArrowOverlay: React.FC<ArrowOverlayProps> = ({
   boardHeight,
   orientation,
   arrowStyle = {},
-}) => {
+}: ArrowOverlayProps) => {
   const defaultStyle = {
     color: arrowStyle.color ?? '#FFD700',
     opacity: arrowStyle.opacity ?? 0.6,
@@ -102,6 +102,7 @@ const ArrowOverlay: React.FC<ArrowOverlayProps> = ({
         { width: boardWidth, height: boardHeight },
       ]}
     >
+      {/* @ts-ignore Svg type is from ambient declaration */}
       <Svg width={boardWidth} height={boardHeight}>
         {arrows.map((pair, idx) => {
           if (!pair || pair.length < 2) return null;

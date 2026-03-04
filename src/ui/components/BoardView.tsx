@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import { BoardSquare } from './BoardSquare';
 
 type RowSquare = {
@@ -48,7 +49,9 @@ export const BoardView: React.FC<BoardViewProps> = ({
   return (
     <View style={[styles.board, style]}>
       {rows.map((rank, rIdx) => (
+        // key is handled by React but not part of BoardRowProps
         <BoardRow
+          // @ts-ignore key prop not part of BoardRowProps
           key={`r-${rIdx}`}
           rank={rank}
           selectedSquare={selectedSquare}
@@ -111,6 +114,7 @@ const BoardRow: React.FC<BoardRowProps> = React.memo(
 
         return (
           <BoardSquare
+            // @ts-ignore key prop not part of BoardSquareProps
             key={sq.key}
             squareNotation={sq.squareNotation}
             pieceKey={sq.pieceKey}
@@ -122,7 +126,7 @@ const BoardRow: React.FC<BoardRowProps> = React.memo(
             kingSquare={kingSquare}
             isGameOver={isCheckmate || isStalemate}
             isDragged={isDraggedSquare}
-            disablePop={disablePop || isDraggedSquare}
+            disablePop={disablePop}
           />
         );
       })}

@@ -9,8 +9,10 @@ function findKingSquare(
   kingColor: 'w' | 'b'
 ): string | null {
   for (let rIdx = 0; rIdx < board.length; rIdx++) {
-    for (let fIdx = 0; fIdx < board[rIdx].length; fIdx++) {
-      const piece = board[rIdx][fIdx];
+    const row = board[rIdx];
+    if (!row) continue;
+    for (let fIdx = 0; fIdx < row.length; fIdx++) {
+      const piece = row[fIdx];
       if (piece && piece.type === 'k' && piece.color === kingColor) {
         return indicesToSquare(rIdx, fIdx, 'white');
       }

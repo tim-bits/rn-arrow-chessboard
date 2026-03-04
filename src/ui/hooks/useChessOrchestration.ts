@@ -79,7 +79,7 @@ export function useChessOrchestration({
   const [isDraggingFlag, setIsDraggingFlag] = React.useState(false);
   useAnimatedReaction(
     () => isDragging.value,
-    (val) => {
+    (val: string) => {
       runOnJS(setIsDraggingFlag)(!!val);
     },
     [isDragging]
