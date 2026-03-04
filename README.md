@@ -95,18 +95,7 @@ Interactive board with gestures, promotion dialog, and arrows.
 - `onMove?: (move) => void` – `{ from, to, promotion? }`
 - `onUserInteraction?: () => boolean | void` – return `true` to ignore the gesture (useful to stop demos)
 
-### ChessSurfaceReadOnly
 
-Read-only board for analysis or display.
-
-```tsx
-<ChessSurfaceReadOnly
-  position="rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
-  orientation="white"
-  boardSize={320}
-  showCoordinates={true}
-/>
-```
 
 ## Hooks
 
@@ -195,7 +184,7 @@ await arrows([
 Arrow timing is controlled by `ChessProvider`:
 
 ```tsx
-<ChessProvider moveAnimationDuration={300} arrowDisplayDuration={500}>
+<ChessProvider moveAnimationDuration={1500}>
   ...
 </ChessProvider>
 ```
@@ -226,7 +215,7 @@ Wrap the component subtree that uses chess hooks/components with `ChessProvider`
 Hooks read store values on mount:
 
 ```tsx
-<ChessProvider moveAnimationDuration={300}>
+<ChessProvider moveAnimationDuration={1500}>
   <Chessboard
     position="start"
     boardSize={320}
