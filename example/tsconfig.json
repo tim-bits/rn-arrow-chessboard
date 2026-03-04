@@ -2,5 +2,14 @@
   "extends": "../tsconfig",
   "compilerOptions": {
     // Avoid expo-cli auto-generating a tsconfig
+    // allow the example project to resolve hoisted types from the repo root
+    "baseUrl": ".",
+    "typeRoots": [
+      "./node_modules/@types",
+      "../node_modules/@types"
+    ],
+    "paths": {
+      "*": ["../node_modules/*"]
+    }
   }
 }

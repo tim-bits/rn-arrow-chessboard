@@ -1,9 +1,14 @@
 {
   "compilerOptions": {
     "rootDir": ".",
+    // allow resolution of packages that live in the example workspace
+    // (react-native and friends are only installed there during development)
+    "baseUrl": ".",
     "paths": {
+      "*": ["node_modules/*", "example/node_modules/*"],
       "rn-arrow-chessboard": ["./src/index"]
     },
+    "typeRoots": ["node_modules/@types", "example/node_modules/@types"],
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "customConditions": ["react-native-strict-api"],
@@ -26,5 +31,11 @@
     "strict": true,
     "target": "ESNext",
     "verbatimModuleSyntax": true
-  }
+  },
+  "include": [
+    "src",
+    "types",
+    "example/**/*.ts",
+    "example/**/*.tsx"
+  ]
 }
