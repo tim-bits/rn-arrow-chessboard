@@ -310,16 +310,16 @@ export default function App() {
 
   const responsiveStyles = {
     title: {
-      fontSize: isSmallScreen ? 24 : isWeb ? 48 : 24,
+      fontSize: isSmallScreen ? 24 : isWeb ? 32 : 24,
     },
     label: {
-      fontSize: isSmallScreen ? 16 : isWeb ? 48 : 16,
+      fontSize: isSmallScreen ? 16 : isWeb ? 18 : 16,
     },
     buttonText: {
-      fontSize: isSmallScreen ? 16 : isWeb ? 48 : 16,
+      fontSize: isSmallScreen ? 16 : isWeb ? 16 : 16,
     },
     input: {
-      fontSize: isSmallScreen ? 16 : isWeb ? 48 : 16,
+      fontSize: isSmallScreen ? 16 : isWeb ? 16 : 16,
     },
   };
 
@@ -759,7 +759,8 @@ const styles = StyleSheet.create({
   },
   controlInput: {
     flex: 1,
-    minWidth: 120,
+    minWidth: 200,
+    width: 200, // Fixed width for web compatibility
   },
   label: {
     fontSize: 16,
