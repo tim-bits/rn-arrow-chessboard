@@ -44,6 +44,7 @@ To run the example app on iOS:
 ```sh
 yarn example ios
 ```
+NOTE: iOS has not been tested, so use at your own risk.
 
 To confirm that the app is running with the new architecture, you can check the Metro logs for a message like this:
 

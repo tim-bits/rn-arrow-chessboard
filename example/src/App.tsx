@@ -614,8 +614,8 @@ export default function App() {
           arrowDisplayDuration={arrowDisplayDuration}
         >
           <Chessboard
+            key={demoKey}
             {...({
-              key: demoKey,
               position: initialFen,
               boardSize:
                 Dimensions.get('window').width > Dimensions.get('window').height
