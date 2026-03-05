@@ -28,6 +28,28 @@ Or with yarn:
 yarn add react-native-gesture-handler react-native-reanimated react-native-svg zustand
 ```
 
+### Add the library (while not published to npm)
+
+Local path (adjacent folder/monorepo):
+
+```sh
+yarn add ../rn-arrow-chessboard
+# or
+npm install ../rn-arrow-chessboard
+```
+
+Git URL:
+
+```sh
+yarn add git+https://github.com/tim-bits/rn-arrow-chessboard.git
+# or
+npm install git+https://github.com/tim-bits/rn-arrow-chessboard.git
+```
+
+
+
+
+
 ## Quick Start
 
 Wrap your app in `ChessProvider` so the store is initialized before components mount.
@@ -50,138 +72,124 @@ export default function App() {
 }
 ```
 
-## Components
+---
+
+## Component API
 
 ### ChessProvider
-
-Initializes store settings before any chessboard renders.
-
-**Props**
-
-- `moveAnimationDuration?: number` – move animation duration in ms
-- `children: React.ReactNode`
+| prop | type | default | notes |
+| --- | --- | --- | --- |
+| `moveAnimationDuration?` | number (ms) | `300` | Time a programmatic move stays in “animating” state. |
+| `arrowDisplayDuration?` | number (ms) | `500` | How long arrows remain visible after `arrows()` resolves. |
+| `children` | React.ReactNode | — | Required wrapper. |
 
 ### Chessboard
+| prop | type | default | notes |
+| --- | --- | --- | --- |
+| `position?` | `FenString` \| `"start"` | `"start"` | Setting a new FEN resets selection, arrows, queue, and history. |
+| `orientation?` | `'white' \| 'black'` | `"white"` | If you pass `"white"`, the stored orientation is used (initially white). |
+| `boardSize?` | number (px) | `320` | Rounded down to the nearest multiple of 8 to avoid hairline gaps. |
+| `showCoordinates?` | boolean | `false` | Adds rank/file labels sized with `useResponsiveCoordinateSize`. |
+| `autoPromoteToQueen?` | boolean | `true` | If `false`, a modal prompts for piece on promotion moves. |
+| `arrowColor?` | string | `#FFD700` | Sets the global arrow color in the store. |
+| `onMove?` | `(move) => void` | — | Called when a move actually starts (after validation/queue flush). |
+| `onUserInteraction?` | `() => boolean \| void` | — | Called on tap/drag start; return `true` to block the gesture (useful to lock the board during scripted demos). |
+| `moveAnimationDuration?` | number | — | Currently ignored on the component; set it via `ChessProvider`. |
 
-Interactive board with gestures, promotion dialog, and arrows.
+Built-ins:
+- Gestures are wrapped in an internal `GestureHandlerRootView`; no extra wrapper needed.
+- Only the side-to-move pieces can be dragged/tapped.
 
-```tsx
-<Chessboard
-  position="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-  orientation="white"
-  boardSize={320}
-  showCoordinates={true}
-  autoPromoteToQueen={false}
-  arrowColor="#FFD700"
-  onMove={({ from, to, promotion }) => {
-    console.log('Move:', { from, to, promotion });
-  }}
-/>
-```
+### PromotionDialog (exported)
+Props: `visible`, `color: 'w' | 'b'`, `onSelect(piece)`, `onCancel()`. You normally don’t render it yourself; Chessboard shows it when needed, but you can import and reuse it for custom flows.
 
-**Props**
-
-- `position?: FenString` – board position in FEN, or `"start"` (default)
-- `orientation?: 'white' | 'black'` – board perspective (default: `"white"`)
-- `boardSize?: number` – board size in pixels (default: `320`)
-- `showCoordinates?: boolean` – show rank/file labels (default: `false`)
-- `autoPromoteToQueen?: boolean` – auto-promote if no piece chosen (default: `true`)
-- `arrowColor?: string` – arrow color (default: `#FFD700`)
-- `onMove?: (move) => void` – `{ from, to, promotion? }`
-- `onUserInteraction?: () => boolean | void` – return `true` to ignore the gesture (useful to stop demos)
-
+---
 
 
 ## Hooks
 
 ### useChessboardAnimation
-
-Programmatic move orchestration with arrows and animation timing.
+Programmatic control with built-in timing.
 
 ```tsx
 import { useChessboardAnimation } from 'rn-arrow-chessboard';
 
-function Orchestrator() {
-  const { move, arrows } = useChessboardAnimation();
+const Demo = () => {
+  const { move, arrows, isAnimating } = useChessboardAnimation();
 
   const play = async () => {
-    await arrows([
-      ['e2', 'e4'],
-      ['d2', 'd4'],
-    ]);
-    await move('e2', 'e4');
+    await arrows([['e2', 'e4'], ['d2', 'd4']]); // rendered + held for arrowDisplayDuration
+    await move('e2', 'e4');                      // waits moveAnimationDuration
   };
 
-  return <Button title="Play" onPress={play} />;
-}
+  return <Button title={isAnimating ? 'Playing…' : 'Play line'} onPress={play} />;
+};
 ```
 
-**Returns**
-
-- `move(from, to, promotion?) -> Promise<boolean>`
-- `arrows(pairs) -> Promise<void>`
-- `animationState`
+Returns:
+- `move(from, to, promotion?) => Promise<boolean>`
+- `arrows(pairs: ArrowPair[]) => Promise<void>` (clears previous arrows, waits render frames + `arrowDisplayDuration`)
 - `isAnimating`
+- `animationState` (`'idle' | 'animating' | 'arrowsUpdating'`)
 
-## Adapters (Optional)
+### useChessStore / chessSelectors (advanced)
+All store state & setters are exported for custom UI (clocks, move list, controls).
 
-Adapters are drop-in helpers for fetching engine suggestions. They are **optional**: you can use them in demos or client apps without changing core behavior.
+Example undo/redo toolbar:
 
-### Types
+```tsx
+import { useChessStore, chessSelectors } from 'rn-arrow-chessboard';
 
-```ts
-export type SuggestionMove = {
-  from: string;
-  to: string;
-  promotion?: string;
-};
+function HistoryBar() {
+  const canUndo = chessSelectors.useCanUndo();
+  const canRedo = chessSelectors.useCanRedo();
+  const undo = useChessStore((s) => s.undo);
+  const redo = useChessStore((s) => s.redo);
 
-export type SuggestionResult = {
-  arrows: [string, string][];
-  bestMove?: SuggestionMove;
-  eval?: number | string;
-};
-
-export interface ChessSuggestionAdapter {
-  getSuggestions(fen: string): Promise<SuggestionResult>;
+  return (
+    <>
+      <Button title="Undo" disabled={!canUndo} onPress={undo} />
+      <Button title="Redo" disabled={!canRedo} onPress={redo} />
+    </>
+  );
 }
 ```
 
-### Lichess Cloud Adapter
+Other handy selectors: `useFen`, `useBoard`, `useMoveHistory`, `useArrows`, `useArrowColor`, `useMoveAnimationDuration`, `useArrowDisplayDuration`, `useControlledMode`, `useCurrentPositionIndex`.
 
-```ts
-import { createLichessCloudAdapter } from 'rn-arrow-chessboard';
+### useResponsiveSize / useResponsiveCoordinateSize
+Responsive sizing utilities; `useResponsiveCoordinateSize` is what Chessboard uses for coordinate labels if `showCoordinates` is true.
+
+---
+
+## Arrows: How They Work
+
+- Configure color: pass `arrowColor` to `Chessboard` (defaults to gold).
+- Priority: `arrows[0]` draws thickest; each subsequent arrow is ~70% the previous thickness. Base thickness ≈ `squareSize * 0.15`.
+- Orientation-aware: coordinates respect the current board orientation.
+- Duration: `useChessboardAnimation().arrows()` waits two RAFs for render, then holds for `arrowDisplayDuration` (configurable in `ChessProvider`).
+
+Example with custom color and slower arrow hold:
+
+```tsx
+<ChessProvider>
+  <Chessboard arrowColor="#4ade80" />
+</ChessProvider>
+```
+
+Engine suggestions example (Lichess Cloud):
+
+```tsx
+import { useChessboardAnimation, createLichessCloudAdapter } from 'rn-arrow-chessboard';
 
 const adapter = createLichessCloudAdapter({ multiPv: 3 });
-const {
-  arrows,
-  bestMove,
-  eval: evaluation,
-} = await adapter.getSuggestions(fen);
-```
 
-Notes:
-
-- Lichess rate limits apply (expect `429` on burst usage).
-- `multiPv` controls how many candidate lines you get back.
-
-## Arrows
-
-Arrows are ordered by priority: the first arrow is the thickest.
-
-```tsx
-await arrows([
-  ['e2', 'e4'], // primary
-  ['d2', 'd4'], // secondary
-]);
-```
-
-Arrow timing is controlled by `ChessProvider`:
-
-```tsx
-<ChessProvider moveAnimationDuration={1500}>
-  ...
-</ChessProvider>
+async function showIdeas(fen: string) {
+  const { arrows, move } = useChessboardAnimation();
+  const { arrows: ideas, bestMove } = await adapter.getSuggestions(fen);
+  await arrows(ideas);
+  if (bestMove) await move(bestMove.from, bestMove.to, bestMove.promotion);
+}
 ```
 
 ## Promotion Flow
