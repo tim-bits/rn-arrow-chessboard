@@ -1,6 +1,8 @@
 # rn-arrow-chessboard
 
-A React Native chessboard component library with interactive play, animations, position history, and suggestion arrows. It uses Zustand for state management and keeps the API small and practical.
+A React Native chessboard with gesture play, animations, queued programmatic moves, promotion handling, moves undo/redo, and suggestion arrows. Built with Zustand state and Reanimated/Gesture Handler.
+
+![lichess_demo](https://github.com/user-attachments/assets/bbde0cec-2850-4027-98ce-4a2d78bbbc1a)
 
 ## Features
 
