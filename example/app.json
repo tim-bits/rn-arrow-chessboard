@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "rn-arrow-chessboard.example"
+      "bundleIdentifier": "rnarrowchessboard.example"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +22,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "rn-arrow-chessboard.example"
+      "package": "rnarrowchessboard.example"
     },
     "web": {
       "favicon": "./assets/favicon.png"
