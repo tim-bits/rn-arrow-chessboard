@@ -21,7 +21,7 @@ import {
 } from '../../src/store/chessStore';
 import { useChessboardAnimation } from '../../src/hooks/useChessboardAnimation';
 import { createLichessCloudAdapter } from '../../src/adapters';
-import { log } from '../../src/utils/log';
+import { log, setLoggingEnabled } from '../../src/utils/log';
 import type { Square, ArrowPair } from '../../src/types/shared';
 
 const DEFAULT_MOVE_ANIMATION_DURATION = 1500;
@@ -286,6 +286,7 @@ export default function App() {
   const [arrowColor, setArrowColor] = useState('#FFD700');
   const [arrowColorInput, setArrowColorInput] = useState('#FFD700');
   const [lockScroll, setLockScroll] = useState(false);
+  const [loggingEnabled, setLoggingEnabledState] = useState(true);
   const [mode, setMode] = useState<'demo' | 'manual' | 'lichess'>('demo');
   const [autoPlay, setAutoPlay] = useState(false);
   const [lichessStatus, setLichessStatus] = useState<LichessStatus>('idle');
@@ -322,6 +323,11 @@ export default function App() {
       fontSize: isSmallScreen ? 16 : isWeb ? 16 : 16,
     },
   };
+
+  // Sync logging toggle with the logging system
+  React.useEffect(() => {
+    setLoggingEnabled(loggingEnabled);
+  }, [loggingEnabled]);
 
   // console.log('[App] responsiveStyles:', JSON.stringify(responsiveStyles, null, 2));
 
@@ -472,6 +478,11 @@ export default function App() {
               Lock Scroll:
             </Text>
             <Switch value={lockScroll} onValueChange={setLockScroll} />
+            <Text style={[styles.label, responsiveStyles.label]}>Logging:</Text>
+            <Switch
+              value={loggingEnabled}
+              onValueChange={setLoggingEnabledState}
+            />
             {mode === 'demo' && (
               <Pressable
                 style={({ pressed }: { pressed: boolean }) => [
