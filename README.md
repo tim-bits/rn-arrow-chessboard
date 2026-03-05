@@ -59,7 +59,6 @@ Initializes store settings before any chessboard renders.
 **Props**
 
 - `moveAnimationDuration?: number` – move animation duration in ms
-- `arrowDisplayDuration?: number` – how long arrows stay visible after render (ms)
 - `children: React.ReactNode`
 
 ### Chessboard

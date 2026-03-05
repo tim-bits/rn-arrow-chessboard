@@ -1,4 +1,4 @@
-let enabled = true;
+let enabled = false;
 
 export const setLoggingEnabled = (value: boolean) => {
   enabled = value;
