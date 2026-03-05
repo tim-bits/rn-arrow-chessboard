@@ -1,7 +1,7 @@
 {
   "name": "rn-arrow-chessboard",
   "version": "0.1.0",
-  "description": "rn chess lib",
+  "description": "A React Native chessboard component library with interactive play, animations, position history, and suggestion arrows",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {

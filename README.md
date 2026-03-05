@@ -14,22 +14,18 @@ A React Native chessboard component library with interactive play, animations, p
 
 ## Installation
 
-```sh
-npm install rn-arrow-chessboard
-```
-
-Or with yarn:
-
-```sh
-yarn add rn-arrow-chessboard
-```
-
 ### Peer Dependencies
 
 Install these in your app:
 
 ```sh
 npm install react-native-gesture-handler react-native-reanimated react-native-svg zustand
+```
+
+Or with yarn:
+
+```sh
+yarn add react-native-gesture-handler react-native-reanimated react-native-svg zustand
 ```
 
 ## Quick Start
@@ -245,6 +241,16 @@ if (bestMove) {
   await move(bestMove.from, bestMove.to, bestMove.promotion);
 }
 ```
+
+## Roadmap
+
+### Planned Features
+
+- **Themes & Styling**: Custom board themes, piece sets, and color schemes
+- **Sound Effects**: Move sounds
+- **Performance**: Further optimizations for large position databases
+- **Export/Import**: PGN and FEN export/import functionality
+
 
 ## Contributing
 
