@@ -36,11 +36,11 @@ describe('BoardView', () => {
       (renderer as any).create(
         <BoardView
           rows={rows}
+          squareSize={40}
           selectedSquare="e1"
           legalMovesSet={new Set(['e2'])}
           isCheck={false}
           isCheckmate={false}
-          isStalemate={false}
           kingSquare="e8"
           draggedSquare="a1"
           animatedFrom="b2"

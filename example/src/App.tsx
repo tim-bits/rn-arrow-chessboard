@@ -21,7 +21,7 @@ import {
 } from '../../src/store/chessStore';
 import { useChessboardAnimation } from '../../src/hooks/useChessboardAnimation';
 import { createLichessCloudAdapter } from '../../src/adapters';
-import { log, setLoggingEnabled } from '../../src/utils/log';
+import { log } from '../../src/utils/log';
 import type { Square, ArrowPair } from '../../src/types/shared';
 
 const DEFAULT_MOVE_ANIMATION_DURATION = 1500;
@@ -280,13 +280,9 @@ export default function App() {
     String(DEFAULT_MOVE_ANIMATION_DURATION)
   );
   const [arrowDisplayDuration] = useState(DEFAULT_ARROW_DISPLAY_DURATION);
-  const [_arrowDurationInput, _setArrowDurationInput] = useState(
-    String(DEFAULT_ARROW_DISPLAY_DURATION)
-  );
   const [arrowColor, setArrowColor] = useState('#FFD700');
   const [arrowColorInput, setArrowColorInput] = useState('#FFD700');
   const [lockScroll, setLockScroll] = useState(false);
-  const [loggingEnabled, setLoggingEnabledState] = useState(true);
   const [mode, setMode] = useState<'demo' | 'manual' | 'lichess'>('demo');
   const [autoPlay, setAutoPlay] = useState(false);
   const [lichessStatus, setLichessStatus] = useState<LichessStatus>('idle');
@@ -311,23 +307,18 @@ export default function App() {
 
   const responsiveStyles = {
     title: {
-      fontSize: isSmallScreen ? 24 : isWeb ? 32 : 24,
+      fontSize: isSmallScreen ? 24 : isWeb ? 48 : 24,
     },
     label: {
-      fontSize: isSmallScreen ? 16 : isWeb ? 18 : 16,
+      fontSize: isSmallScreen ? 16 : isWeb ? 48 : 16,
     },
     buttonText: {
-      fontSize: isSmallScreen ? 16 : isWeb ? 16 : 16,
+      fontSize: isSmallScreen ? 16 : isWeb ? 48 : 16,
     },
     input: {
-      fontSize: isSmallScreen ? 16 : isWeb ? 16 : 16,
+      fontSize: isSmallScreen ? 16 : isWeb ? 48 : 16,
     },
   };
-
-  // Sync logging toggle with the logging system
-  React.useEffect(() => {
-    setLoggingEnabled(loggingEnabled);
-  }, [loggingEnabled]);
 
   // console.log('[App] responsiveStyles:', JSON.stringify(responsiveStyles, null, 2));
 
@@ -401,26 +392,7 @@ export default function App() {
               editable={mode !== 'manual'}
             />
           </View>
-          {/* <View
-            style={[styles.controlRow, isSmallScreen && styles.controlRowStack]}
-          >
-            <Text style={[styles.label, responsiveStyles.label]}>
-              Arrow Display (ms):
-            </Text>
-            <TextInput
-              style={[
-                styles.input,
-                responsiveStyles.input,
-                styles.controlInput,
-                mode === 'manual' && styles.inputDisabled,
-              ]}
-              value={arrowDurationInput}
-              onChangeText={handleArrowDurationChange}
-              placeholder={DEFAULT_ARROW_DISPLAY_DURATION.toString()}
-              keyboardType="number-pad"
-              editable={mode !== 'manual'}
-            />
-          </View> */}
+          {/* Arrow display duration input intentionally removed to simplify demo controls */}
           <View
             style={[styles.controlRow, isSmallScreen && styles.controlRowStack]}
           >
@@ -478,11 +450,6 @@ export default function App() {
               Lock Scroll:
             </Text>
             <Switch value={lockScroll} onValueChange={setLockScroll} />
-            <Text style={[styles.label, responsiveStyles.label]}>Logging:</Text>
-            <Switch
-              value={loggingEnabled}
-              onValueChange={setLoggingEnabledState}
-            />
             {mode === 'demo' && (
               <Pressable
                 style={({ pressed }: { pressed: boolean }) => [
@@ -626,33 +593,24 @@ export default function App() {
         >
           <Chessboard
             key={demoKey}
-            {...({
-              position: initialFen,
-              boardSize:
-                Dimensions.get('window').width > Dimensions.get('window').height
-                  ? Dimensions.get('window').width * 0.4
-                  : Dimensions.get('window').height * 0.4,
-              showCoordinates: true,
-              autoPromoteToQueen: false,
-              arrowColor: arrowColor,
-              onMove: ({
-                from,
-                to,
-                promotion,
-              }: {
-                from: string;
-                to: string;
-                promotion?: string;
-              }) => {
-                log('[App] Move made:', { from, to, promotion });
-              },
-              onUserInteraction: () => {
-                if (!isDemoRunning) return;
-                stopAutoMovesRef.current = true;
-                useChessStore.getState().clearArrows();
-                return true;
-              },
-            } as any)}
+            position={initialFen}
+            boardSize={
+              Dimensions.get('window').width > Dimensions.get('window').height
+                ? Dimensions.get('window').width * 0.4
+                : Dimensions.get('window').height * 0.4
+            }
+            showCoordinates={true}
+            autoPromoteToQueen={false}
+            arrowColor={arrowColor}
+            onMove={({ from, to, promotion }) => {
+              log('[App] Move made:', { from, to, promotion });
+            }}
+            onUserInteraction={() => {
+              if (!isDemoRunning) return;
+              stopAutoMovesRef.current = true;
+              useChessStore.getState().clearArrows();
+              return true;
+            }}
           />
 
           <ChessDemoEffects
@@ -770,8 +728,7 @@ const styles = StyleSheet.create({
   },
   controlInput: {
     flex: 1,
-    minWidth: 200,
-    width: 200, // Fixed width for web compatibility
+    minWidth: 120,
   },
   label: {
     fontSize: 16,

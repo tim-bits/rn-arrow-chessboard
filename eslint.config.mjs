@@ -16,24 +16,24 @@ const compat = new FlatCompat({
 
 export default defineConfig([
   {
-    extends: fixupConfigRules(compat.extends('@react-native', 'prettier')),
-    plugins: { prettier },
-    rules: {
-      'react/react-in-jsx-scope': 'off',
-      'prettier/prettier': 'error',
-      // disable rules that may not be available in every package
-      'import/first': 'off',
-    },
-  },
-  {
     // ignore build artifacts, workspace tooling, and config itself
     ignores: [
-      'node_modules/',
-      'lib/',
+      'node_modules/**',
+      'lib/**',
+      'dist/**',
+      'build/**',
       '.yarn/**',
       'eslint.config.mjs',
       'example/jest.setup.js',
     ],
+  },
+  {
+    extends: fixupConfigRules(compat.extends('@react-native', 'prettier')),
+    plugins: { prettier },
+    rules: {
+      'react/react-in-jsx-scope': 'off',
+      'prettier/prettier': 'off',
+    },
   },
   {
     // enable jest globals for example code

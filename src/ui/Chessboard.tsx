@@ -39,6 +39,7 @@ export default function Chessboard({
   onMove,
   onUserInteraction,
 }: {
+  key?: string | number;
   position?: FenString;
   orientation?: 'white' | 'black';
   boardSize?: number;
@@ -113,7 +114,6 @@ export default function Chessboard({
     arrowColorFromStore,
     isCheck,
     isCheckmate,
-    isStalemate,
     kingSquare,
     dragX,
     dragY,
@@ -224,12 +224,12 @@ export default function Chessboard({
                     height: effectiveBoardSize,
                   } as any
                 }
+                squareSize={squareSize}
                 rows={memoizedRows}
                 selectedSquare={selectedSquare}
                 legalMovesSet={legalMovesSet}
                 isCheck={isCheck}
                 isCheckmate={isCheckmate}
-                isStalemate={isStalemate}
                 kingSquare={kingSquare}
                 draggedSquare={draggedPiece?.square || null}
                 animatedFrom={animatedMove?.from || null}

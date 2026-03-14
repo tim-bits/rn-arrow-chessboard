@@ -13,11 +13,11 @@ type RowSquare = {
 
 type BoardViewProps = {
   rows: Array<Array<RowSquare>>;
+  squareSize: number;
   selectedSquare: string | null;
   legalMovesSet: Set<string>;
   isCheck: boolean;
   isCheckmate: boolean;
-  isStalemate: boolean;
   kingSquare: string | null;
   draggedSquare: string | null;
   animatedFrom: string | null;
@@ -28,11 +28,11 @@ type BoardViewProps = {
 
 export const BoardView: React.FC<BoardViewProps> = ({
   rows,
+  squareSize,
   selectedSquare,
   legalMovesSet,
   isCheck,
   isCheckmate,
-  isStalemate,
   kingSquare,
   draggedSquare,
   animatedFrom,
@@ -54,11 +54,11 @@ export const BoardView: React.FC<BoardViewProps> = ({
           // @ts-ignore key prop not part of BoardRowProps
           key={`r-${rIdx}`}
           rank={rank}
+          squareSize={squareSize}
           selectedSquare={selectedSquare}
           legalMovesSet={legalMovesSet}
           isCheck={isCheck}
           isCheckmate={isCheckmate}
-          isStalemate={isStalemate}
           kingSquare={kingSquare}
           draggedSquare={draggedSquare}
           animatedFrom={animatedFrom}
@@ -72,11 +72,11 @@ export const BoardView: React.FC<BoardViewProps> = ({
 
 type BoardRowProps = {
   rank: Array<RowSquare>;
+  squareSize: number;
   selectedSquare: string | null;
   legalMovesSet: Set<string>;
   isCheck: boolean;
   isCheckmate: boolean;
-  isStalemate: boolean;
   kingSquare: string | null;
   draggedSquare: string | null;
   animatedFrom: string | null;
@@ -87,11 +87,11 @@ type BoardRowProps = {
 const BoardRow: React.FC<BoardRowProps> = React.memo(
   ({
     rank,
+    squareSize,
     selectedSquare,
     legalMovesSet,
     isCheck,
     isCheckmate,
-    isStalemate,
     kingSquare,
     draggedSquare,
     animatedFrom,
@@ -120,11 +120,12 @@ const BoardRow: React.FC<BoardRowProps> = React.memo(
             pieceKey={sq.pieceKey}
             pieceImage={sq.pieceImage}
             isLight={sq.isLight}
+            squareSize={squareSize}
             isSelected={isSelected}
             isLegal={isLegal}
             isKingInCheck={isKingInCheck}
             kingSquare={kingSquare}
-            isGameOver={isCheckmate || isStalemate}
+            isGameOver={isCheckmate}
             isDragged={isDraggedSquare}
             disablePop={disablePop}
           />
@@ -134,11 +135,11 @@ const BoardRow: React.FC<BoardRowProps> = React.memo(
   ),
   (prev, next) =>
     prev.rank === next.rank &&
+    prev.squareSize === next.squareSize &&
     prev.selectedSquare === next.selectedSquare &&
     prev.legalMovesSet === next.legalMovesSet &&
     prev.isCheck === next.isCheck &&
     prev.isCheckmate === next.isCheckmate &&
-    prev.isStalemate === next.isStalemate &&
     prev.kingSquare === next.kingSquare &&
     prev.draggedSquare === next.draggedSquare &&
     prev.animatedFrom === next.animatedFrom &&

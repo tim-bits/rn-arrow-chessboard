@@ -16,7 +16,7 @@ const PromotionDialog: React.FC<Props> = ({
 }) => {
   const pieces: Array<'q' | 'r' | 'b' | 'n'> = ['q', 'r', 'b', 'n'];
 
-  const imageFor = (_color: 'w' | 'b', piece: string) => {
+  const imageFor = (piece: string) => {
     const key = `${color}${piece.toUpperCase()}`;
     switch (key) {
       case 'wQ':
@@ -59,10 +59,10 @@ const PromotionDialog: React.FC<Props> = ({
                     : styles.pieceButtonDark,
                 ]}
                 onStartShouldSetResponder={() => true}
-                onResponderRelease={() => onSelect(p)}
+                  onResponderRelease={() => onSelect(p)}
               >
                 <Image
-                  source={imageFor(color, p)}
+                  source={imageFor(p)}
                   style={styles.pieceImage}
                   resizeMode="contain"
                 />

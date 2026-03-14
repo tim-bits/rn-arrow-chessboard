@@ -19,6 +19,7 @@ interface BoardSquareProps {
   pieceKey: string | null;
   pieceImage: any;
   isLight: boolean;
+  squareSize: number;
   isSelected: boolean;
   isLegal: boolean;
   isKingInCheck: boolean;
@@ -33,6 +34,7 @@ const BoardSquareComponent: React.FC<BoardSquareProps> = ({
   pieceKey: _pieceKey,
   pieceImage,
   isLight,
+  squareSize,
   isSelected,
   isLegal,
   isKingInCheck,
@@ -91,6 +93,8 @@ const BoardSquareComponent: React.FC<BoardSquareProps> = ({
     };
   });
 
+  const dotSize = Math.max(12, squareSize * 0.28);
+
   return (
     <View style={[styles.square, { backgroundColor: bg }]}>
       {/* eslint-disable react-native/no-inline-styles */}
@@ -107,7 +111,20 @@ const BoardSquareComponent: React.FC<BoardSquareProps> = ({
         />
       ) : null}
       {/* eslint-enable react-native/no-inline-styles */}
-      {isLegal && !isSelected && <View style={styles.legalMoveDot} />}
+      {isLegal && !isSelected && (
+        <View
+          style={[
+            styles.legalMoveDot,
+            {
+              width: dotSize,
+              height: dotSize,
+              borderRadius: dotSize / 2,
+              marginTop: -dotSize / 2,
+              marginLeft: -dotSize / 2,
+            },
+          ]}
+        />
+      )}
       {isSelected && <View style={styles.selectedBorder} />}
       {isKingInCheck && <View style={styles.checkBorder} />}
     </View>
@@ -120,6 +137,7 @@ export const BoardSquare = React.memo(
     prev.squareNotation === next.squareNotation &&
     prev.pieceKey === next.pieceKey &&
     prev.isLight === next.isLight &&
+    prev.squareSize === next.squareSize &&
     prev.isSelected === next.isSelected &&
     prev.isLegal === next.isLegal &&
     prev.isKingInCheck === next.isKingInCheck &&

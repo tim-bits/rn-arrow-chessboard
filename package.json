@@ -130,7 +130,7 @@
     "tabWidth": 2,
     "trailingComma": "es5",
     "useTabs": false,
-    "endOfLine": "auto"
+    "endOfLine": "crlf"
   },
   "commitlint": {
     "extends": [
