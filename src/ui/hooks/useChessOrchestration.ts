@@ -61,6 +61,7 @@ export function useChessOrchestration({
   const isCheck = chessSelectors.useIsCheck();
   const isCheckmate = chessSelectors.useIsCheckmate();
   const kingSquare = chessSelectors.useKingSquare();
+  const overlayIntent = chessSelectors.useOverlayIntent();
   const legalMovesSet = React.useMemo(
     () => new Set(legalMoves as string[]),
     [legalMoves]
@@ -198,6 +199,86 @@ export function useChessOrchestration({
     // Process queued moves after the board is committed
     useChessStore.getState().processQueue();
   }, []);
+
+  React.useLayoutEffect(() => {
+    if (!overlayIntent) return;
+    const { from, to } = overlayIntent;
+    const chess = useChessStore.getState().chess;
+    const piece = chess.get(from);
+    if (!piece) {
+      useChessStore.getState().setOverlayIntent(null);
+      return;
+    }
+    const image = PIECE_IMAGES[`${piece.color}${piece.type.toUpperCase()}`];
+    if (!image) {
+      useChessStore.getState().setOverlayIntent(null);
+      return;
+    }
+
+    const moveKey = `${from}-${to}`;
+    manualOverlayMoveKeyRef.current = moveKey;
+    lastAnimatedMoveRef.current = moveKey;
+    const id = ++moveAnimIdRef.current;
+
+    const [fromCenterX, fromCenterY] = squareToPixel(
+      from,
+      effectiveBoardSize,
+      effectiveBoardSize,
+      effectiveOrientation
+    );
+    const [toCenterX, toCenterY] = squareToPixel(
+      to,
+      effectiveBoardSize,
+      effectiveBoardSize,
+      effectiveOrientation
+    );
+
+    moveFromX.value = fromCenterX - effectiveBoardSize / 8 / 2;
+    moveFromY.value = fromCenterY - effectiveBoardSize / 8 / 2;
+    moveToX.value = toCenterX - effectiveBoardSize / 8 / 2;
+    moveToY.value = toCenterY - effectiveBoardSize / 8 / 2;
+    moveProgress.value = 0;
+    moveOpacity.value = 1;
+    moveScale.value = 1;
+
+    setAnimatedMove({
+      from,
+      to,
+      image,
+    });
+
+    // Clear the intent so it is one-shot
+    useChessStore.getState().setOverlayIntent(null);
+
+    // Safety: if animating move never arrives, clear overlay after duration
+    const duration = clamp(
+      MOVE_GLIDE_BASE_MS +
+        MOVE_GLIDE_PER_SQUARE_MS * Math.max(0, squareDistance(from, to) - 1),
+      MOVE_GLIDE_MIN_MS,
+      MOVE_GLIDE_MAX_MS
+    );
+    moveProgress.value = withTiming(
+      1,
+      { duration, easing: Easing.inOut(Easing.cubic) },
+      (finished: boolean) => {
+        'worklet';
+        if (!finished) return;
+        runOnJS(clearAnimatedMove)(id);
+      }
+    );
+  }, [
+    overlayIntent,
+    effectiveBoardSize,
+    effectiveOrientation,
+    moveFromX,
+    moveFromY,
+    moveToX,
+    moveToY,
+    moveOpacity,
+    moveProgress,
+    moveScale,
+    clearAnimatedMove,
+  ]);
 
   const startManualOverlay = React.useCallback(
     (move: {

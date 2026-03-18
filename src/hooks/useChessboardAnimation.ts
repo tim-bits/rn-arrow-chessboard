@@ -48,7 +48,9 @@ export const useChessboardAnimation = () => {
         setArrows([]);
 
         setAnimationState('animating');
-        const result = requestMove(from, to, promotion);
+        const result = requestMove(from, to, promotion, {
+          startOverlayIntent: true,
+        });
         const success = result !== 'rejected';
         log(`[useChessboardAnimation] requestMove returned: ${result}`);
         if (!success) {

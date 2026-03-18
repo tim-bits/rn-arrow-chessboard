@@ -36,12 +36,14 @@ export type MoveRequestOptions = {
   allowQueue?: boolean;
   flushIfAnimating?: boolean;
   clearQueue?: boolean;
+  startOverlayIntent?: boolean;
 };
 
 export type QueuedMove = {
   from: Square;
   to: Square;
   promotion?: string;
+  startOverlayIntent?: boolean;
 };
 
 // ============================================================================
@@ -85,12 +87,12 @@ export interface ChessState {
 
   // NEW: Move queueing
   queuedMoves: QueuedMove[];
-  requestMove: (
-    from: Square,
-    to: Square,
-    promotion?: string,
-    options?: MoveRequestOptions
-  ) => MoveRequestResult;
+    requestMove: (
+      from: Square,
+      to: Square,
+      promotion?: string,
+      options?: MoveRequestOptions
+    ) => MoveRequestResult;
   processQueue: () => void;
 
   // Demo guard (survives StrictMode remounts)
@@ -128,6 +130,7 @@ export interface ChessState {
   arrowColor: string;
   autoPromoteToQueen: boolean;
   moveToken: number;
+  overlayIntent: { from: Square; to: Square } | null;
 
   // ============================================================================
   // STEP 1 ADDITIONS: Immutable position history
@@ -154,6 +157,7 @@ export interface ChessState {
   setArrowColor: (color: string) => void;
   setAutoPromoteToQueen: (auto: boolean) => void;
   bumpMoveToken: () => number;
+  setOverlayIntent: (intent: { from: Square; to: Square } | null) => void;
   reset: () => void;
   undo: () => boolean;
   redo: () => boolean;
@@ -245,6 +249,7 @@ export const useChessStore = create<ChessState>((set: any, get: any) => {
     arrowColor: '#FFD700',
     autoPromoteToQueen: true,
     moveToken: 0,
+    overlayIntent: null,
 
     // ============================================================================
     // STEP 1 ADDITIONS: Initialize position history
@@ -446,6 +451,7 @@ export const useChessStore = create<ChessState>((set: any, get: any) => {
       const allowQueue = options?.allowQueue !== false;
       const flushIfAnimating = options?.flushIfAnimating === true;
       const clearQueue = options?.clearQueue === true;
+      const startOverlayIntent = options?.startOverlayIntent === true;
       const { animatingMove, pendingBoardUpdate, queuedMoves } = get();
 
       if (animatingMove || pendingBoardUpdate) {
@@ -458,12 +464,20 @@ export const useChessStore = create<ChessState>((set: any, get: any) => {
           if (clearQueue && get().queuedMoves.length > 0) {
             set({ queuedMoves: [] });
           }
+          if (startOverlayIntent) {
+            set({ overlayIntent: { from, to } });
+          }
           const started = get().makeMove(from, to, promotion);
           return started ? 'started' : 'rejected';
         }
 
         if (allowQueue) {
-          set({ queuedMoves: [...queuedMoves, { from, to, promotion }] });
+          set({
+            queuedMoves: [
+              ...queuedMoves,
+              { from, to, promotion, startOverlayIntent },
+            ],
+          });
           return 'queued';
         }
         return 'rejected';
@@ -471,6 +485,10 @@ export const useChessStore = create<ChessState>((set: any, get: any) => {
 
       if (clearQueue && queuedMoves.length > 0) {
         set({ queuedMoves: [] });
+      }
+
+      if (startOverlayIntent) {
+        set({ overlayIntent: { from, to } });
       }
 
       const started = get().makeMove(from, to, promotion);
@@ -488,6 +506,9 @@ export const useChessStore = create<ChessState>((set: any, get: any) => {
       while (remaining.length > 0) {
         const next = remaining.shift();
         if (!next) break;
+        if (next.startOverlayIntent) {
+          set({ overlayIntent: { from: next.from, to: next.to } });
+        }
         const started = get().makeMove(next.from, next.to, next.promotion);
         if (started) {
           set({ queuedMoves: remaining });
@@ -534,15 +555,17 @@ export const useChessStore = create<ChessState>((set: any, get: any) => {
     setPromotionSquare: (square: Square | null) =>
       set({ promotionSquare: square }),
     setArrows: (arrows: ArrowPair[]) => set({ arrows }),
-    clearArrows: () => set({ arrows: [] }),
-    setAnimationState: (state: AnimationState) =>
-      set({ animationState: state }),
-    setMoveAnimationDuration: (duration: number) =>
-      set({ moveAnimationDuration: duration }),
+      clearArrows: () => set({ arrows: [] }),
+      setAnimationState: (state: AnimationState) =>
+        set({ animationState: state }),
+      setMoveAnimationDuration: (duration: number) =>
+        set({ moveAnimationDuration: duration }),
     setArrowDisplayDuration: (duration: number) =>
       set({ arrowDisplayDuration: duration }),
     setArrowColor: (color: string) => set({ arrowColor: color }),
     setAutoPromoteToQueen: (auto: boolean) => set({ autoPromoteToQueen: auto }),
+    setOverlayIntent: (intent: { from: Square; to: Square } | null) =>
+      set({ overlayIntent: intent }),
 
     // ============================================================================
     // UPDATED: reset() now resets position history too
@@ -751,6 +774,8 @@ export const chessSelectors = {
   useMoveToken: () => useChessStore((s: ChessState) => s.moveToken),
   useAutoPromoteToQueen: () =>
     useChessStore((s: ChessState) => s.autoPromoteToQueen),
+  useOverlayIntent: () =>
+    (useChessStore as any)((s: ChessState) => s.overlayIntent, shallow),
   useControlledMode: () => useChessStore((s: ChessState) => s.isControlled),
 
   // ============================================================================
