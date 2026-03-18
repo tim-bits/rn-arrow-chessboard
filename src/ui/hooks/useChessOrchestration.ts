@@ -94,6 +94,7 @@ export function useChessOrchestration({
   const moveOpacity = useSharedValue(0);
   const moveScale = useSharedValue(1);
   const moveAnimIdRef = React.useRef(0);
+  const overlayTokenRef = React.useRef(0);
   const lastAnimatedMoveRef = React.useRef<string | null>(null);
   const manualOverlayMoveKeyRef = React.useRef<string | null>(null);
   const [animatedMove, setAnimatedMove] = React.useState<{
@@ -101,6 +102,7 @@ export function useChessOrchestration({
     to: Square;
     image: any;
     captured?: { square: Square; image: any };
+    token?: number;
   } | null>(null);
   const animatedMoveRef = React.useRef<typeof animatedMove>(null);
   React.useEffect(() => {
@@ -167,7 +169,7 @@ export function useChessOrchestration({
     if (moveAnimIdRef.current !== id) return;
 
     log(
-      '[Animation] Completing store update, clearing overlay next frame',
+      '[Animation] Completing store update, clearing overlay now',
       `t=${Date.now()}`,
       `token=${useChessStore.getState().moveToken}`
     );
@@ -184,17 +186,17 @@ export function useChessOrchestration({
         `[Timing] manual move -> animation complete ${currentMove.from}->${currentMove.to} ${delta}ms kind=${manual.kind} token=${manual.token}`
       );
     }
-    // Complete the board update in the store FIRST
+
+    // Invalidate any in-flight overlay and clear immediately
+    overlayTokenRef.current += 1;
+    setAnimatedMove(null);
+    manualOverlayMoveKeyRef.current = null;
+
+    // Complete the board update in the store
     useChessStore.getState().completeAnimation();
 
-    // Clear overlay immediately and process queue (no extra frame delay)
-    // Clear overlay on next frame to avoid a one-frame gap
-    requestAnimationFrame(() => {
-      if (moveAnimIdRef.current !== id) return;
-      setAnimatedMove(null);
-      manualOverlayMoveKeyRef.current = null;
-      useChessStore.getState().processQueue();
-    });
+    // Process queued moves after the board is committed
+    useChessStore.getState().processQueue();
   }, []);
 
   const startManualOverlay = React.useCallback(
@@ -216,12 +218,7 @@ export function useChessOrchestration({
       manualOverlayMoveKeyRef.current = `${from}-${to}`;
       lastAnimatedMoveRef.current = `${from}-${to}`;
       const id = ++moveAnimIdRef.current;
-
-      setAnimatedMove({
-        from,
-        to,
-        image,
-      });
+      const token = ++overlayTokenRef.current;
 
       const [fromCenterX, fromCenterY] = squareToPixel(
         from,
@@ -256,6 +253,13 @@ export function useChessOrchestration({
       moveProgress.value = 0;
       moveOpacity.value = 1;
       moveScale.value = useDragRelease ? 1.25 : 1;
+
+      setAnimatedMove({
+        from,
+        to,
+        image,
+        token,
+      });
 
       const duration = useDragRelease
         ? DRAG_SNAP_MS
@@ -414,12 +418,7 @@ export function useChessOrchestration({
     }
 
     const id = ++moveAnimIdRef.current;
-    setAnimatedMove({
-      from: moveData.from,
-      to: moveData.to,
-      image,
-      captured,
-    });
+    const token = ++overlayTokenRef.current;
 
     const squareSize = effectiveBoardSize / 8;
     const [fromCenterX, fromCenterY] = squareToPixel(
@@ -442,6 +441,14 @@ export function useChessOrchestration({
     moveProgress.value = 0;
     moveOpacity.value = 1;
     moveScale.value = 1;
+
+    setAnimatedMove({
+      from: moveData.from,
+      to: moveData.to,
+      image,
+      captured,
+      token,
+    });
 
     const duration = clamp(
       MOVE_GLIDE_BASE_MS +
@@ -476,6 +483,11 @@ export function useChessOrchestration({
     clearAnimatedMove,
   ]);
 
+  const visibleAnimatedMove =
+    animatedMove && animatedMove.token === overlayTokenRef.current
+      ? animatedMove
+      : null;
+
   return {
     board,
     animatingMove,
@@ -493,7 +505,7 @@ export function useChessOrchestration({
     isDragging,
     isDraggingFlag,
     draggedPiece,
-    animatedMove,
+    animatedMove: visibleAnimatedMove,
     setAnimatedMove,
     movePieceStyle: movePieceStylePublic,
     combinedGesture,
